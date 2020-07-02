@@ -34,7 +34,7 @@ $routes->get('home', 'Home::index');
 //$routes->get('/api/login/login', 'Login::login');
 
 //$routes->resource('login');
-$routes->get('login','Login::login');
+$routes->post('login','Login::login');
 
 /**
  * --------------------------------------------------------------------

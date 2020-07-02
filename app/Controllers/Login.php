@@ -17,7 +17,7 @@ class Login extends RestController
 
     public function login()
     {
-        $param = $this->request->getJSON();;
+        $param = $this->request->getJSON();
         $model = new UserModel();
         $arr   = $model->where(['user_name' => $param->username])->find();
         if (isset($param->password) && $param->password === current($arr)['password']) {

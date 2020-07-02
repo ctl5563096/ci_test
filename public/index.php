@@ -1,4 +1,8 @@
 <?php
+// 解决跨域问题
+header("Access-Control-Allow-Origin:*");
+header('Access-Control-Allow-Methods:POST,GET,OPTION');
+header('Access-Control-Allow-Headers:x-requested-with, content-type');
 
 // Valid PHP Version?
 $minPHPVersion = '7.2';
