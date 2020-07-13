@@ -23,7 +23,10 @@ class LoginFilter implements FilterInterface
             return $this->failUnauthorized('Lose Auth token' ,10001,'access fail');
         }
         // 验证token
-        Jwt::verifyToken($tokenArr[2]);
+        $res = Jwt::verifyToken($tokenArr[2]);
+        if($res === false){
+            return $this->failUnauthorized('Auth Fail' ,10001,'Auth Fail');
+        }
     }
 
     public function after(RequestInterface $request, ResponseInterface $response)
