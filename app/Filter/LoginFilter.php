@@ -14,6 +14,10 @@ class LoginFilter implements FilterInterface
 
     public function before(RequestInterface $request)
     {
+        $methods = ['post' ,'get' ,'delete' ,'put'];
+        if (!$request->getMethod()){
+            return;
+        }
         $token = $request->getHeader('Authorization');
         $tokenArr = explode(' ',$token);
         // 从Service类里面提取响应实例 由于在过滤器Response还未被实例化
@@ -24,8 +28,8 @@ class LoginFilter implements FilterInterface
         }
         // 验证token
         $res = Jwt::verifyToken($tokenArr[2]);
-        if($res === false){
-            return $this->failUnauthorized('Auth Fail' ,10001,'Auth Fail');
+        if($res['res'] === false){
+            return $this->failUnauthorized( $res['msg'],10001,'Auth Fail');
         }
     }
 

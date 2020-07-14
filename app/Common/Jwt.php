@@ -48,23 +48,28 @@ class Jwt
             return false;
 
         //签名验证
-        if (self::signature($base64header . '.' . $base64payload, self::$key, $base64decodeheader['alg']) !== $sign)
-            return false;
+        if (self::signature($base64header . '.' . $base64payload, self::$key, $base64decodeheader['alg']) !== $sign) {
+            return ['res' => false , 'msg' => '验签失败'];
+        }
 
         $payload = json_decode(self::base64UrlDecode($base64payload), true);
 
         //签发时间大于当前服务器时间验证失败
-        if (isset($payload['iat']) && $payload['iat'] > time())
-            return false;
+        if (isset($payload['iat']) && $payload['iat'] > time()){
+            return ['res' => false , 'msg' => '签发时间过大'];
+        }
 
         //过期时间小宇当前服务器时间验证失败
-        if (isset($payload['exp']) && $payload['exp'] < time())
-            return false;
+        if (isset($payload['exp']) && $payload['exp'] < time()){
+            return ['res' => false , 'msg' => '过期时间小于服务器验证时间'];
+        }
+
 
         //该nbf时间之前不接收处理该Token
-        if (isset($payload['nbf']) && $payload['nbf'] > time())
-            return false;
-        return $payload;
+        if (isset($payload['nbf']) && $payload['nbf'] > time()){
+            return ['res' => false , 'msg' => '请求过快'];
+        }
+        return ['res' => true];
     }
 
     private static function base64UrlEncode(string $input)
