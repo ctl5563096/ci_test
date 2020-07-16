@@ -30,11 +30,11 @@ $routes->setAutoRoute(true);
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
+// 路由配置
 $routes->post('home', 'Home::index');
-//$routes->get('/api/login/login', 'Login::login');
-
-//$routes->resource('login');
+$routes->post('register', 'User::register');
 $routes->post('login','Login::login');
+$routes->get('user/getList','User::userList');
 
 /**
  * --------------------------------------------------------------------

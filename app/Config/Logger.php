@@ -32,7 +32,7 @@ class Logger extends BaseConfig
 	| your log files will fill up very fast.
 	|
 	*/
-	public $threshold = 3;
+	public $threshold = 4;
 
 	/*
 	|--------------------------------------------------------------------------
@@ -98,7 +98,7 @@ class Logger extends BaseConfig
 			 *
 			 * Note: Leaving it blank will default to 'log'.
 			 */
-			'fileExtension'   => '',
+			'fileExtension'   => 'log',
 
 			/*
 			 * The file system permissions to be applied on newly created log files.
@@ -106,7 +106,7 @@ class Logger extends BaseConfig
 			 * IMPORTANT: This MUST be an integer (no quotes) and you MUST use octal
 			 * integer notation (i.e. 0700, 0644, etc.)
 			 */
-			'filePermissions' => 0644,
+			'filePermissions' => 0777,
 
 			/*
 			 * Logging Directory Path
@@ -114,7 +114,7 @@ class Logger extends BaseConfig
 			 * By default, logs are written to WRITEPATH . 'logs/'
 			 * Specify a different destination here, if desired.
 			 */
-			'path'            => '',
+			'path'            => '/logs/',
 		],
 
 		/**

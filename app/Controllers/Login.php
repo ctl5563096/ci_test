@@ -13,8 +13,6 @@ class Login extends RestController
 {
     protected $modelName = 'App\Models\UserModel';
 
-    protected $format = 'json';
-
     public function login()
     {
         $param = $this->request->getJSON();
@@ -25,7 +23,7 @@ class Login extends RestController
                 'iss' => current($arr)['user_name'],
                 'iat' => time(),  //签发时间
                 'exp' => time() + 7200,  //过期时间
-                'nbf' => time() + 60,  //生效时间，在此之前是无效的
+                'nbf' => time() + 0,  //生效时间，在此之前是无效的
                 'jti' => md5(uniqid('JWT') . time()),
                 'sub' => current($arr)['id']
             ];

@@ -11,6 +11,8 @@ use Psr\Log\LoggerInterface;
 
 class RestController extends ResourceController
 {
+    protected $format = 'json';
+
     public $verbs = [
         'get'    => 'index',
         'post'   => 'create',
@@ -25,10 +27,14 @@ class RestController extends ResourceController
 
     public function respondApi(array $data)
     {
+        // 判断$data是否为正常的请求返回的数据
+        if (array_key_exists('code', $data)) {
+            return $this->respond($data);
+        }
         $data = [
-            'status' => 200,
-            'msg'    => '请求成功',
-            'data'   => $data,
+            'code' => 200,
+            'msg'  => '请求成功',
+            'data' => $data,
         ];
         return $this->respond($data);
     }
