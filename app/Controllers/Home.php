@@ -23,6 +23,10 @@ class Home extends BaseController
 
     public function notFound()
     {
-        return $this->respond(json_encode(['', 100002, 'api not found']), 404, 'api not found');
+        $methods = ['get' ,'post' ,'delete' ,'put'];
+        if (in_array($this->request->getMethod() ,$methods)){
+            return $this->respond(json_encode(['', 10002, 'api not found']), 404, 'api not found');
+        }
+        return $this->respond([],200,'option request');
     }
 }
