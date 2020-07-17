@@ -25,7 +25,7 @@ class Login extends RestController
                 'exp' => time() + 7200,  //过期时间
                 'nbf' => time() + 0,  //生效时间，在此之前是无效的
                 'jti' => md5(uniqid('JWT') . time()),
-                'sub' => current($arr)['id']
+                'sub' => current($arr)['id'],
             ];
             // 生成jwt
             $token = Jwt::getToken($payload);

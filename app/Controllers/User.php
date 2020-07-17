@@ -41,7 +41,7 @@ class User extends RestController
     {
         $id = $this->modelObj->register($this->request->getJSON(true));
         // 如果不是整数就返回错误信息
-        if (!is_int($id)){
+        if (!is_int($id)) {
             return $this->respondApi($id);
         }
         return $this->respondApi(['id' => $id]);
