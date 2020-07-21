@@ -74,4 +74,22 @@ class UserModel extends Model
         if ($userId === false) return ['code' => 10005, '注册用户失败', current($this->errors())];
         else return (int)$userId;
     }
+
+    /**
+     * Notes: 获取管理员个人信息
+     *
+     * Author: chentulin
+     * DateTime: 2020/7/21 14:23
+     * E-MAIL: <chentulinys@163.com>
+     * @param int $id
+     * @return array|object
+     */
+    public function getUserInfo(int $id)
+    {
+        $res = $this->find($id);
+        if (!empty($res)){
+            return $res;
+        }
+        return ['code' => 10006, '获取用户信息失败', ''];
+    }
 }

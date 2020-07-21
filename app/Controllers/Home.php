@@ -15,8 +15,8 @@ class Home extends BaseController
     public function index()
     {
         return $this->respond([
-            'status' => 200,
-            'msg'    => '请求成功1',
+            'code' => 200,
+            'msg'    => '请求成功',
             'data'   => '',
         ], 200, 'success');
     }

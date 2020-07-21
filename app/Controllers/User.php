@@ -58,4 +58,16 @@ class User extends RestController
     {
         return $this->respondApi($this->modelObj->getList());
     }
+
+    /**
+     * Notes: 获取管理员信息
+     *
+     * Author: chentulin
+     * DateTime: 2020/7/21 11:39
+     * E-MAIL: <chentulinys@163.com>
+     */
+    public function getUserInfo()
+    {
+        return $this->respondApi($this->modelObj->getUserInfo((int)$this->request->getPostGet('id')));
+    }
 }

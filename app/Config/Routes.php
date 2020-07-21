@@ -35,6 +35,7 @@ $routes->post('home', 'Home::index');
 $routes->post('register', 'User::register');
 $routes->post('login','Login::login');
 $routes->get('user/getList','User::userList');
+$routes->get('user/getUserInfo','User::getUserInfo');
 
 /**
  * --------------------------------------------------------------------
