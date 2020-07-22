@@ -87,9 +87,37 @@ class UserModel extends Model
     public function getUserInfo(int $id)
     {
         $res = $this->find($id);
-        if (!empty($res)){
+        if (!empty($res)) {
             return $res;
         }
         return ['code' => 10006, '获取用户信息失败', ''];
+    }
+
+    /**
+     * Notes: 修改管理员信息
+     *
+     * Author: chentulin
+     * DateTime: 2020/7/22 16:44
+     * E-MAIL: <chentulinys@163.com>
+     * @param $data
+     * @return array|bool
+     * @throws \ReflectionException
+     */
+    public function updateUserInfo($data)
+    {
+        $updateData = [
+            'user_name' => $data['username'],
+            'password'  => $data['password'],
+            'email'     => $data['email'],
+            'is_use'    => $data['is_enable'] === true ? 1 : 0,
+            'is_black'  => $data['is_black'] === true ? 1 : 0,
+            'sex'       => (int)$data['sex'],
+        ];
+        $userModel  = new self();
+        $res        = $userModel->update((int)$data['id'], $updateData);
+        if (!$res) {
+            return ['code' => 10007, '更新用户信息失败', current($this->db->error())];
+        }
+        return ['res' => $res];
     }
 }

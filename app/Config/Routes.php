@@ -5,9 +5,8 @@ $routes = Services::routes();
 
 // Load the system's routing file first, so that the app and ENVIRONMENT
 // can override as needed.
-if (file_exists(SYSTEMPATH . 'Config/Routes.php'))
-{
-	require SYSTEMPATH . 'Config/Routes.php';
+if (file_exists(SYSTEMPATH . 'Config/Routes.php')) {
+    require SYSTEMPATH . 'Config/Routes.php';
 }
 
 /**
@@ -33,9 +32,10 @@ $routes->setAutoRoute(true);
 // 路由配置
 $routes->post('home', 'Home::index');
 $routes->post('register', 'User::register');
-$routes->post('login','Login::login');
-$routes->get('user/getList','User::userList');
-$routes->get('user/getUserInfo','User::getUserInfo');
+$routes->post('login', 'Login::login');
+$routes->get('user/getList', 'User::userList');
+$routes->get('user/getUserInfo', 'User::getUserInfo');
+$routes->put('user/updateUserInfo', 'User::updateUserInfo');
 
 /**
  * --------------------------------------------------------------------
@@ -50,7 +50,6 @@ $routes->get('user/getUserInfo','User::getUserInfo');
  * You will have access to the $routes object within that file without
  * needing to reload it.
  */
-if (file_exists(APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php'))
-{
-	require APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php';
+if (file_exists(APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php')) {
+    require APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php';
 }

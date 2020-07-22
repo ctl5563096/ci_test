@@ -3,15 +3,14 @@
 // 允许所有域名访问
 header("Access-Control-Allow-Origin:*");
 // 允许的请求方法
-header('Access-Control-Allow-Methods:POST,GET,OPTION');
+header('Access-Control-Allow-Methods:POST,GET,OPTION,PUT');
 // 允许携带的请求头
 header('Access-Control-Allow-Headers:Origin, X-Requested-With, content-Type, Accept, Authorization');
 
 // Valid PHP Version?
 $minPHPVersion = '7.2';
-if (phpversion() < $minPHPVersion)
-{
-	die("Your PHP version must be {$minPHPVersion} or higher to run CodeIgniter. Current version: " . phpversion());
+if (phpversion() < $minPHPVersion) {
+    die("Your PHP version must be {$minPHPVersion} or higher to run CodeIgniter. Current version: " . phpversion());
 }
 unset($minPHPVersion);
 

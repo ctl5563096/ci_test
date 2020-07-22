@@ -70,4 +70,17 @@ class User extends RestController
     {
         return $this->respondApi($this->modelObj->getUserInfo((int)$this->request->getPostGet('id')));
     }
+
+    /**
+     * Notes: 修改管理员信息
+     *
+     * Author: chentulin
+     * DateTime: 2020/7/22 16:03
+     * E-MAIL: <chentulinys@163.com>
+     * @throws \ReflectionException
+     */
+    public function updateUserInfo()
+    {
+        return $this->respondApi($this->modelObj->updateUserInfo($this->request->getJSON(true)));
+    }
 }
