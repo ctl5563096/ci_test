@@ -37,6 +37,7 @@ $routes->get('user/getList', 'User::userList');
 $routes->get('user/getUserInfo', 'User::getUserInfo');
 $routes->put('user/updateUserInfo', 'User::updateUserInfo');
 $routes->post('rule', 'Rule::addRule');
+$routes->get('menu', 'Rule::getMenu');
 
 /**
  * --------------------------------------------------------------------

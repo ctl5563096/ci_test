@@ -13,6 +13,7 @@ use Psr\Log\LoggerInterface;
  * 权限控制以及菜单模块
  *
  * @package App\Controllers
+ * @property RuleModel $modelObj
  */
 class Rule extends RestController
 {
@@ -32,10 +33,29 @@ class Rule extends RestController
      * Author: chentulin
      * DateTime: 2020/8/4 19:38
      * E-MAIL: <chentulinys@163.com>
+     * @throws \ReflectionException
      */
     public function addRule()
     {
-        var_dump(1111);die();
-        return $this->respondApi($this->modelObj->addRule($this->request->getJSON(true)));
+        $id = $this->modelObj->addRule($this->request->getJSON(true));
+        // 如果不是整数就返回错误信息
+        if (!is_int($id)) {
+            return $this->respondApi($id);
+        }
+        return $this->respondApi(['id' => $id]);
+    }
+
+    /**
+     * Notes: 根据用户获取权限菜单
+     *
+     * Author: chentulin
+     * DateTime: 2020/8/5 16:53
+     * E-MAIL: <chentulinys@163.com>}
+     */
+    public function getMenu()
+    {
+        // 暂时未做权限 区分
+        $res = $this->modelObj->getMenuByRole();
+        return $this->respondApi($res);
     }
 }
