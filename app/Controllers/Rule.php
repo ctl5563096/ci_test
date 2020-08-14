@@ -116,11 +116,23 @@ class Rule extends RestController
     {
         // 获取参数
         $params = $this->request->getJSON(true);
-        if (isset($params['id'])){
+        if (!isset($params['id'])){
             return $this->respondApi([
                 'code' => 20003, 'msg' => '请确认选中角色', ''
             ]);
         }
         return $this->respondApi($this->modelObj->changeRoleByRule($params));
+    }
+
+    /**
+     * Notes: 删除权限
+     *
+     * Author: chentulin
+     * DateTime: 2020/8/14 15:59
+     * E-MAIL: <chentulinys@163.com>
+     */
+    public function delRule()
+    {
+
     }
 }

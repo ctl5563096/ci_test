@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Common\BaseModel;
-use phpDocumentor\Reflection\Element;
 
 /**
  * 权限模型
@@ -223,10 +222,7 @@ class RuleModel extends BaseModel
         if ($id === 1) {
             $res = $this->select('id')->findAll();
         } else {
-            // 返回对应角色的权限
-            $query = $this->connect->table('role_rule');
-            // 获取现在的所有的权限
-            $res   = $query->select('rule as id')->where('role', (int)$id)->get()->getResultArray();
+            $res = $this->getRuleById($id);
         }
         return $res;
     }
@@ -242,8 +238,70 @@ class RuleModel extends BaseModel
      */
     public function changeRoleByRule(array $params): array
     {
-        if ($params['id'] === 1) {
+        if ((int)$params['id'] === 1) {
             return ['code' => 20004, 'msg' => '超级管理员不允许修改权限，默认拥有全部权限', ''];
         }
+        $id                 = $params['id'];
+        $ruleArr            = array_column($this->getRuleById((int)$id), 'id');
+        $fun                = function ($string) {
+            return (int)$string;
+        };
+        $baseRuleIntArrBase = array_map($fun, $ruleArr);
+        $postRuleIntArrBase = array_map($fun, $params['changeRuleArr']);
+        if ((count(array_diff($baseRuleIntArrBase, $postRuleIntArrBase)) === 0) && (count(array_diff($postRuleIntArrBase, $baseRuleIntArrBase)) === 0)) {
+            return ['code' => 20005, 'msg' => '请确认你有更改权限', ''];
+        }
+        $addArr = array_diff($postRuleIntArrBase, $baseRuleIntArrBase);
+        $delArr = array_diff($baseRuleIntArrBase, $postRuleIntArrBase);
+        $res    = false;
+        // 新增权限
+        if (count($addArr) !== 0) {
+            $insertArr = [];
+            foreach ($addArr as $val) {
+                $insertArr[] = [
+                    'role' => $id,
+                    'rule' => $val,
+                ];
+            }
+            $qb     = $this->connect->table('role_rule');
+            $result = $qb->insertBatch($insertArr);
+            if ($result === false) {
+                $res = $result;
+            } else {
+                $res = true;
+            }
+        }
+        // 取消权限
+        if (count($delArr) !== 0) {
+            $qbDel = $this->connect->table('role_rule');
+            $qbDel->where('role', $id);
+            $qbDel->whereIn('rule', $delArr);
+            $resDel = $qbDel->delete();
+            if ($resDel === false) {
+                $res = $resDel;
+            } else {
+                $res = true;
+            }
+        }
+        if ($res) {
+            return [];
+        } else {
+            return ['code' => 20006, 'msg' => '修改权限失败', ''];
+        }
+    }
+
+    /**
+     * Notes: 获取角色权限
+     *
+     * Author: chentulin
+     * DateTime: 2020/8/14 9:51
+     * E-MAIL: <chentulinys@163.com>
+     * @param int $id
+     * @return array
+     */
+    public function getRuleById(int $id)
+    {
+        $query = $this->connect->table('role_rule');
+        return $query->select('rule as id')->where('role', (int)$id)->get()->getResultArray();
     }
 }
