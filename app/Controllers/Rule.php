@@ -58,4 +58,69 @@ class Rule extends RestController
         $res = $this->modelObj->getMenuByRole();
         return $this->respondApi($res);
     }
+
+    /**
+     * Notes: 获取所有的权限
+     *
+     * @author: chentulin
+     * Date: 2020/8/10
+     * Time: 17:11
+     */
+    public function getRule()
+    {
+        // 获取所有的权限
+        $res = $this->modelObj->getAllRule();
+        return $this->respondApi($res);
+    }
+
+    /**
+     * Notes: 获取所有角色
+     *
+     * @author: chentulin
+     * Date: 2020/8/11
+     * Time: 16:30
+     */
+    public function getRole()
+    {
+        // 获取所有的权限
+        $res = $this->modelObj->getAllRole();
+        return $this->respondApi($res);
+    }
+
+    /**
+     * Notes: 根据角色获取用户权限
+     *
+     * @author: chentulin
+     * Date: 2020/8/11
+     * Time: 17:42
+     */
+    public function getRuleByRoleId()
+    {
+        $id = $this->request->getGet('id');
+        if (!isset($id)){
+            return $this->respondApi([
+                'code' => 20002, 'msg' => '获取权限失败,请检查是否选中角色，否则请联系管理员', ''
+            ]);
+        }
+        return $this->respondApi($this->modelObj->getRuleByRoleId((int)$id));
+    }
+
+    /**
+     * Notes: 更改角色权限
+     *
+     * @author: chentulin
+     * Date: 2020/8/13
+     * Time: 18:05
+     */
+    public function changeRoleByRule()
+    {
+        // 获取参数
+        $params = $this->request->getJSON(true);
+        if (isset($params['id'])){
+            return $this->respondApi([
+                'code' => 20003, 'msg' => '请确认选中角色', ''
+            ]);
+        }
+        return $this->respondApi($this->modelObj->changeRoleByRule($params));
+    }
 }

@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use CodeIgniter\Model;
+use App\Common\BaseModel;
+use phpDocumentor\Reflection\Element;
 
 /**
  * 权限模型
@@ -10,7 +11,7 @@ use CodeIgniter\Model;
  * Class RuleModel
  * @package App\Models
  */
-class RuleModel extends Model
+class RuleModel extends BaseModel
 {
     // 表的主键 必须要有以保证模型的正常工作
     protected $primaryKey = 'id';
@@ -175,5 +176,74 @@ class RuleModel extends Model
         }
         echo $content;
         return null;
+    }
+
+    /**
+     * Notes: 获取所有的权限
+     *
+     * @return array
+     * @author: chentulin
+     * Date: 2020/8/10
+     * Time: 17:13
+     */
+    public function getAllRule()
+    {
+        $menuArr     = $this->select('id as id ,pid,rule_name as label')->findAll();
+        $this->menus = $menuArr;
+        // 整理权限
+        return $this->getMenuList($menuArr);
+    }
+
+    /**
+     * Notes: 获取所有的角色
+     *
+     * @author: chentulin
+     * Date: 2020/8/11
+     * Time: 16:31
+     */
+    public function getAllRole()
+    {
+        $query = $this->connect->table('role');
+        return $query->select('id,role_name as role')->where('is_enabled', 1)->get()->getResult('array');
+    }
+
+    /**
+     * Notes: 根据角色Id选中权限
+     *
+     * @param int $id
+     * @return array
+     * @author: chentulin
+     * Date: 2020/8/11
+     * Time: 18:01
+     */
+    public function getRuleByRoleId(int $id): array
+    {
+        $res = [];
+        // 如果是管理员 就返回所有权限id
+        if ($id === 1) {
+            $res = $this->select('id')->findAll();
+        } else {
+            // 返回对应角色的权限
+            $query = $this->connect->table('role_rule');
+            // 获取现在的所有的权限
+            $res   = $query->select('rule as id')->where('role', (int)$id)->get()->getResultArray();
+        }
+        return $res;
+    }
+
+    /**
+     * Notes: 修改角色权限
+     *
+     * @param array $params
+     * @return array
+     * @author: chentulin
+     * Date: 2020/8/13
+     * Time: 19:12
+     */
+    public function changeRoleByRule(array $params): array
+    {
+        if ($params['id'] === 1) {
+            return ['code' => 20004, 'msg' => '超级管理员不允许修改权限，默认拥有全部权限', ''];
+        }
     }
 }

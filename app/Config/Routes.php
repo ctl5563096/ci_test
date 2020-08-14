@@ -38,7 +38,10 @@ $routes->get('user/getUserInfo', 'User::getUserInfo');
 $routes->put('user/updateUserInfo', 'User::updateUserInfo');
 $routes->post('rule', 'Rule::addRule');
 $routes->get('menu', 'Rule::getMenu');
-
+$routes->get('rule', 'Rule::getRule');
+$routes->get('role', 'Rule::getRole');
+$routes->get('ruleById', 'Rule::getRuleByRoleId');
+$routes->put('rule', 'Rule::changeRoleByRule');
 /**
  * --------------------------------------------------------------------
  * Additional Routing

@@ -39,8 +39,11 @@ class Jwt
     public static function verifyToken($Token)
     {
         $tokens = explode('.', $Token);
-        if (count($tokens) != 3)
-            return false;
+
+        if (count($tokens) != 3){
+            return ['res' => false , 'msg' => '验签失败'];
+        }
+
 
         [$base64header, $base64payload, $sign] = $tokens;
         $base64decodeheader = json_decode(self::base64UrlDecode($base64header), true);
