@@ -135,4 +135,41 @@ class Rule extends RestController
     {
 
     }
+
+    /**
+     * Notes: 获取权限详情
+     *
+     * @author: chentulin
+     * Date: 2020/8/20
+     * Time: 16:45
+     */
+    public function ruleDetail()
+    {
+        $id = $this->request->getGet('id');
+        if (!isset($id)){
+            return $this->respondApi([
+                'code' => 20015, 'msg' => '系统错误请联系管理员', ''
+            ]);
+        }
+        return $this->respondApi($this->modelObj->ruleDetail((int)$id));
+    }
+
+    /**
+     * Notes: 修改权限
+     *
+     * @author: chentulin
+     * Date: 2020/8/20
+     * Time: 19:58
+     */
+    public function editRule()
+    {
+        // 获取参数
+        $params = $this->request->getJSON(true);
+        if (!isset($params['id'])){
+            return $this->respondApi([
+                'code' => 20016, 'msg' => '系统错误，请联系管理员', ''
+            ]);
+        }
+        return $this->respondApi($this->modelObj->editRule($params));
+    }
 }

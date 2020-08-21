@@ -24,7 +24,7 @@ class RuleModel extends BaseModel
     protected $dateFormat = 'datetime';
     // 更新或者插入时候 允许插入或者更新的字段
     protected $allowedFields = [
-        'rule_name', 'pid', 'is_menu',
+        'rule_name', 'pid', 'is_menu', 'url', 'icon', 'controller', 'action'
     ];
     // 验证规则
     protected $validationRules = [
@@ -60,7 +60,11 @@ class RuleModel extends BaseModel
      */
     public function addRule($data)
     {
-        $ruleId = $this->insert($data, true);
+        // 对菜单数据类型进行标准化
+        $data['is_menu']   = (int)$data['is_menu'];
+        $data['pid']       = (int)$data['pid'];
+        $data['rule_name'] = $data['name'];
+        $ruleId            = $this->insert($data, true);
         if ($ruleId === false) return ['code' => 20001, 'msg' => '添加权限失败', 'result' => current($this->errors())];
         else return (int)$ruleId;
     }
@@ -303,5 +307,33 @@ class RuleModel extends BaseModel
     {
         $query = $this->connect->table('role_rule');
         return $query->select('rule as id')->where('role', (int)$id)->get()->getResultArray();
+    }
+
+    /**
+     * Notes: 获取权限详情
+     *
+     * @param int $id
+     * @return array
+     * @author: chentulin
+     * Date: 2020/8/20
+     * Time: 17:38
+     */
+    public function ruleDetail(int $id)
+    {
+        $query = $this->connect->table('rule');
+        return $query->select('*')->where('id', (int)$id)->get()->getResultArray();
+    }
+
+    /**
+     * Notes: 修改权限
+     *
+     * @param array $data
+     * @author: chentulin
+     * Date: 2020/8/20
+     * Time: 20:01
+     */
+    public function editRule(array $data)
+    {
+
     }
 }

@@ -43,6 +43,8 @@ $routes->get('role', 'Rule::getRole');
 $routes->get('ruleById', 'Rule::getRuleByRoleId');
 $routes->put('rule', 'Rule::changeRoleByRule');
 $routes->delete('rule', 'Rule::delRule');
+$routes->get('ruleDetail','Rule::ruleDetail');
+$routes->put('editRule','Rule::editRule');
 /**
  * --------------------------------------------------------------------
  * Additional Routing
