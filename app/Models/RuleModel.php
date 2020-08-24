@@ -24,7 +24,7 @@ class RuleModel extends BaseModel
     protected $dateFormat = 'datetime';
     // 更新或者插入时候 允许插入或者更新的字段
     protected $allowedFields = [
-        'rule_name', 'pid', 'is_menu', 'url', 'icon', 'controller', 'action'
+        'rule_name', 'pid', 'is_menu', 'url', 'icon', 'controller', 'action',
     ];
     // 验证规则
     protected $validationRules = [
@@ -334,6 +334,21 @@ class RuleModel extends BaseModel
      */
     public function editRule(array $data)
     {
-
+        $id = (int)$data['id'];
+        $data['rule_name'] = $data['name'];
+        $query = $this->connect->table('rule');
+        // 获取所有更新数组的键 如果不在就删除
+        $keysArr = array_keys($data);
+        foreach ($keysArr as $val){
+            if (!in_array($val,$this->allowedFields)){
+                unset($data[$val]);
+            }
+        }
+        $query->where('id', $id);
+        $res = $query->update($data);
+        if (!$res){
+            return ['code' => 20017, 'msg' => '修改权限失败', ''];
+        }
+        return  [];
     }
 }
