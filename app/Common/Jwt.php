@@ -72,7 +72,7 @@ class Jwt
         if (isset($payload['nbf']) && $payload['nbf'] > time()){
             return ['res' => false , 'msg' => '请求过快'];
         }
-        return ['res' => true];
+        return ['res' => $payload];
     }
 
     private static function base64UrlEncode(string $input)

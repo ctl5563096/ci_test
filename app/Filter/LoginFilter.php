@@ -7,6 +7,7 @@ use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Config\Services;
+use Predis\Client;
 
 class LoginFilter implements FilterInterface
 {
@@ -22,13 +23,25 @@ class LoginFilter implements FilterInterface
             $token    = $request->getHeader('Authorization');
             $tokenArr = explode(' ', $token);;
             if (count($tokenArr) !== 3) {
-                // 响应 201 状态码
-                return $this->failUnauthorized('Lose Auth token', 10001, 'access fail');
+                // 响应 401 状态码
+                return $this->response->setStatusCode(400,'LOSE TOKEN')->send();
             }
             // 验证token
             $res = Jwt::verifyToken($tokenArr[2]);
             if ($res['res'] === false) {
-                return $this->failUnauthorized($res['msg'], 10001, 'Auth Fail');
+                return $this->response->setStatusCode(403,'TOKEN AUTH FAIL')->send();
+            }
+            $router = Services::router();
+            // 验证权限
+            $controllerStr = $router->controllerName();
+            $controller = explode("\\", $controllerStr)[3];
+            $method     = $router->methodName();
+            $autUrl     = $controller.'\\'.$method;
+            $cache      = Services::cache();
+            $authStr    = $cache->get($res['res']['sub'] . '_' . $res['res']['iss']);
+            $authArr    = json_decode($authStr);
+            if ((int)$res['res']['sub'] !== 1 && !in_array($autUrl,$authArr)){
+                return $this->response->setStatusCode(401,'USER NOT  AUTH')->send();
             }
         }
     }

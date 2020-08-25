@@ -6,8 +6,10 @@ namespace App\Controllers;
 
 use App\Common\Jwt;
 use App\Common\RestController;
+use App\Models\RuleModel;
 use App\Models\UserModel;
 use CodeIgniter\RESTful\ResourceController;
+use Config\Services;
 
 class Login extends RestController
 {
@@ -15,9 +17,10 @@ class Login extends RestController
 
     public function login()
     {
-        $param = $this->request->getJSON();
-        $model = new UserModel();
-        $arr   = $model->where(['user_name' => $param->username])->find();
+        $param     = $this->request->getJSON();
+        $model     = new UserModel();
+        $arr       = $model->where(['user_name' => $param->username])->find();
+        $ruleModel = new RuleModel();
         if (isset($param->password) && $param->password === current($arr)['password']) {
             $payload = [
                 'iss' => current($arr)['user_name'],
@@ -29,8 +32,13 @@ class Login extends RestController
             ];
             // 生成jwt
             $token = Jwt::getToken($payload);
+            // 把权限存到redis里面
+            $authStr = json_encode($ruleModel->getAllAuth((int)current($arr)['id']));
+            $key     = (int)current($arr)['id'] . '_' . current($arr)['user_name'];
+            $cache   = Services::cache();
+            $cache->save($key, $authStr, 7200);
             // 返回用户信息以方便存储到vuex里面去
-            return $this->respondApi(['token' => $token,'userInfo' => json_encode(current($arr))]);
+            return $this->respondApi(['token' => $token, 'userInfo' => json_encode(current($arr))]);
         }
         return $this->failForbidden('连接被拒绝，请确认账号密码输入正确', 10001, 'access fail');
     }

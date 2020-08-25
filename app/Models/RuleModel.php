@@ -351,4 +351,27 @@ class RuleModel extends BaseModel
         }
         return  [];
     }
+
+    /**
+     * Notes: 获取所有权限的组合
+     *
+     * Author: chentulin
+     * DateTime: 2020/8/25 10:25
+     * E-MAIL: <chentulinys@163.com>
+     * @param int $id
+     */
+    public function getAllAuth(int $id)
+    {
+        $query = $this->connect->table('role_rule as rr');
+        $query->select("CONCAT(cr.controller,'\',cr.`action` ) as auth_str");
+        $query->join('admin_user as cau','rr.role = cau.role','left');
+        $query->join('rule as cr','cr.id = rr.rule','left');
+        $query->join('role as cr2', 'cr2.id = rr.role`' ,'left');
+        $query->where('cau.id',$id);
+        $query->where('cau.is_black',0);
+        $query->where('cau.is_use',1);
+        $query->where('cr2.is_enabled',1);
+        $res = $query->get()->getResultArray();
+        return array_column($res,'auth_str');
+    }
 }
