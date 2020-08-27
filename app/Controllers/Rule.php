@@ -133,7 +133,14 @@ class Rule extends RestController
      */
     public function delRule()
     {
-
+        // 获取id
+        $id = (int)$this->request->getGet('id');
+        if(!isset($id)){
+            return $this->respondApi([
+                'code' => 20015, 'msg' => '系统错误请联系管理员', ''
+            ]);
+        }
+        return $this->respondApi((array)$this->modelObj->delRule($id));
     }
 
     /**

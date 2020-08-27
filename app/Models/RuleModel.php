@@ -328,28 +328,29 @@ class RuleModel extends BaseModel
      * Notes: 修改权限
      *
      * @param array $data
+     * @return array
      * @author: chentulin
      * Date: 2020/8/20
      * Time: 20:01
      */
     public function editRule(array $data)
     {
-        $id = (int)$data['id'];
+        $id                = (int)$data['id'];
         $data['rule_name'] = $data['name'];
-        $query = $this->connect->table('rule');
+        $query             = $this->connect->table('rule');
         // 获取所有更新数组的键 如果不在就删除
         $keysArr = array_keys($data);
-        foreach ($keysArr as $val){
-            if (!in_array($val,$this->allowedFields)){
+        foreach ($keysArr as $val) {
+            if (!in_array($val, $this->allowedFields)) {
                 unset($data[$val]);
             }
         }
         $query->where('id', $id);
         $res = $query->update($data);
-        if (!$res){
+        if (!$res) {
             return ['code' => 20017, 'msg' => '修改权限失败', ''];
         }
-        return  [];
+        return [];
     }
 
     /**
@@ -359,19 +360,58 @@ class RuleModel extends BaseModel
      * DateTime: 2020/8/25 10:25
      * E-MAIL: <chentulinys@163.com>
      * @param int $id
+     * @return array
      */
     public function getAllAuth(int $id)
     {
         $query = $this->connect->table('role_rule as rr');
         $query->select("CONCAT(cr.controller,'\',cr.`action` ) as auth_str");
-        $query->join('admin_user as cau','rr.role = cau.role','left');
-        $query->join('rule as cr','cr.id = rr.rule','left');
-        $query->join('role as cr2', 'cr2.id = rr.role`' ,'left');
-        $query->where('cau.id',$id);
-        $query->where('cau.is_black',0);
-        $query->where('cau.is_use',1);
-        $query->where('cr2.is_enabled',1);
+        $query->join('admin_user as cau', 'rr.role = cau.role', 'left');
+        $query->join('rule as cr', 'cr.id = rr.rule', 'left');
+        $query->join('role as cr2', 'cr2.id = rr.role`', 'left');
+        $query->where('cau.id', $id);
+        $query->where('cau.is_black', 0);
+        $query->where('cau.is_use', 1);
+        $query->where('cr2.is_enabled', 1);
         $res = $query->get()->getResultArray();
-        return array_column($res,'auth_str');
+        return array_column($res, 'auth_str');
     }
+
+    /**
+     * Notes: 删除权限以及旗下所有的子权限
+     *
+     * @param int $id
+     * @return array
+     * @author: chentulin
+     * Date: 2020/8/26
+     * Time: 9:35
+     */
+    public function delRule(int $id)
+    {
+        $query = $this->connect->table('rule as c1');
+        $query->select("IFNULL(c1.id ,0) as id_first ,IFNULL(c2.id ,0) as id_second ,IFNULL(c3.id ,0) as id_third");
+        $query->join('rule as c2', 'c1.id = c2.pid', 'left');
+        $query->join('rule as c3', 'c2.id = c3.pid', 'left');
+        $query->where('c1.id', $id);
+        $res     = $query->get()->getResultArray();
+        $ruleArr = [];
+        foreach ($res as $val){
+            $ruleArr[] = $val['id_first'];
+            $ruleArr[] = $val['id_second'];
+            $ruleArr[] = $val['id_third'];
+        }
+        // 新删除权限数组
+        $newArr = array_map(function (&$val){
+            return (int)$val;
+        },array_unique(array_filter($ruleArr)));
+        $queryDel = $this->connect->table('rule');
+        $queryDel->whereIn('id' ,$newArr);
+        $querySql = $queryDel->delete();
+        if ($querySql){
+            return ['res' => true];
+        }else{
+            return ['code' => 20020 ,'msg' => '删除权限失败'];
+        }
+    }
+
 }

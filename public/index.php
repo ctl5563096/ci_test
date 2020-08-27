@@ -3,7 +3,7 @@
 // 允许所有域名访问
 header("Access-Control-Allow-Origin:*");
 // 允许的请求方法
-header('Access-Control-Allow-Methods:POST,GET,OPTION,PUT');
+header('Access-Control-Allow-Methods:POST,GET,OPTION,PUT,DELETE');
 // 允许携带的请求头
 header('Access-Control-Allow-Headers:Origin, X-Requested-With, content-Type, Accept, Authorization');
 

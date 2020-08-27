@@ -41,7 +41,7 @@ class LoginFilter implements FilterInterface
             $authStr    = $cache->get($res['res']['sub'] . '_' . $res['res']['iss']);
             $authArr    = json_decode($authStr);
             if ((int)$res['res']['sub'] !== 1 && !in_array($autUrl,$authArr)){
-                return $this->response->setStatusCode(401,'USER NOT  AUTH')->send();
+                return $this->response->setStatusCode(401,'USER NOT AUTH')->send();
             }
         }
     }
