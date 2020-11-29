@@ -7,7 +7,6 @@ use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Config\Services;
-use Predis\Client;
 
 class LoginFilter implements FilterInterface
 {
@@ -16,6 +15,10 @@ class LoginFilter implements FilterInterface
     public function before(RequestInterface $request)
     {
         $methods = ['get', 'post', 'delete', 'put'];
+        $allAuth = [
+            'User\getUserInfo',
+            'User\updateUserInfo',
+        ];
         // 从Service类里面提取响应实例 由于在过滤器Response还未被实例化
         $this->response = Services::response();
         // 规避options请求带来的token验证导致的401
@@ -24,30 +27,37 @@ class LoginFilter implements FilterInterface
             $tokenArr = explode(' ', $token);;
             if (count($tokenArr) !== 3) {
                 // 响应 401 状态码
-                return $this->response->setStatusCode(400,'LOSE TOKEN')->send();
+                return $this->response->setStatusCode(400, 'LOSE TOKEN')->send();
             }
             // 验证token
             $res = Jwt::verifyToken($tokenArr[2]);
             if ($res['res'] === false) {
-                return $this->response->setStatusCode(403,'TOKEN AUTH FAIL')->send();
+                return $this->response->setStatusCode(403, 'TOKEN AUTH FAIL')->send();
             }
             $router = Services::router();
-            // 验证权限
+            // 验证权限 跳过部分全局接口：比如获取个人信息接口
             $controllerStr = $router->controllerName();
-            $controller = explode("\\", $controllerStr)[3];
-            $method     = $router->methodName();
-            $autUrl     = $controller.'\\'.$method;
-            $cache      = Services::cache();
-            $authStr    = $cache->get($res['res']['sub'] . '_' . $res['res']['iss']);
-            $authArr    = json_decode($authStr);
-            if ((int)$res['res']['sub'] !== 1 && !in_array($autUrl,$authArr)){
-                return $this->response->setStatusCode(401,'USER NOT AUTH')->send();
+            $controller    = explode("\\", $controllerStr)[3];
+            $method        = $router->methodName();
+            $authUrl       = $controller . '\\' . $method;
+            $cache         = Services::cache();
+            $authStr       = $cache->get($res['res']['sub'] . '_' . $res['res']['iss']);
+            $authArr       = json_decode($authStr);
+            // 跳过部分接口
+            if (!in_array($authUrl, $allAuth)) {
+                // 使用token去查询用户 防止token被不同用户调用
+                if ((int)$res['res']['sub'] !== 1 && !in_array($authUrl, $authArr)) {
+                    return $this->response->setStatusCode(401, 'USER NOT AUTH')->send();
+                }
             }
+//            $cache->save('userAuthId',$res['res']['sub']);
         }
     }
 
     public function after(RequestInterface $request, ResponseInterface $response)
     {
         // TODO: Implement after() method.
+//        $cache      = Services::cache();
+//        $cache->delete('userAuthId');
     }
 }

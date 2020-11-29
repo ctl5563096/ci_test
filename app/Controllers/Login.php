@@ -40,6 +40,6 @@ class Login extends RestController
             // 返回用户信息以方便存储到vuex里面去
             return $this->respondApi(['token' => $token, 'userInfo' => json_encode(current($arr))]);
         }
-        return $this->failForbidden('连接被拒绝，请确认账号密码输入正确', 10001, 'access fail');
+        return  $this->respondApi(['code' => 201, 'msg' => '登录失败,请检查账号密码是否正确！']);
     }
 }

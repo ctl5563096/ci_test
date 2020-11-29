@@ -30,12 +30,18 @@ $routes->setAutoRoute(true);
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 // 路由配置
+// 基本类
 $routes->post('home', 'Home::index');
 $routes->post('register', 'User::register');
 $routes->post('login', 'Login::login');
-$routes->get('user/getList', 'User::userList');
+// 用户类
+$routes->get('user', 'User::userList');
 $routes->get('user/getUserInfo', 'User::getUserInfo');
-$routes->put('user/updateUserInfo', 'User::updateUserInfo');
+$routes->put('user', 'User::updateUserInfo');
+$routes->put('user/changeStatus', 'User::changeStatus');
+$routes->put('user/updateAdminInfo', 'User::updateAdminInfo');
+$routes->put('user/normalUserList', 'User::normalUserList');
+// 权限类
 $routes->post('rule', 'Rule::addRule');
 $routes->get('menu', 'Rule::getMenu');
 $routes->get('rule', 'Rule::getRule');
@@ -43,8 +49,13 @@ $routes->get('role', 'Rule::getRole');
 $routes->get('ruleById', 'Rule::getRuleByRoleId');
 $routes->put('rule', 'Rule::changeRoleByRule');
 $routes->delete('rule', 'Rule::delRule');
-$routes->get('ruleDetail','Rule::ruleDetail');
-$routes->put('editRule','Rule::editRule');
+$routes->get('ruleDetail', 'Rule::ruleDetail');
+$routes->put('editRule', 'Rule::editRule');
+// 上传类
+$routes->post('upload', 'Upload::upload');
+// 房屋类
+$routes->post('house', 'Data::insertHouse');
+$routes->get('house', 'Data::getHouseList');
 /**
  * --------------------------------------------------------------------
  * Additional Routing

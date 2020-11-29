@@ -56,7 +56,7 @@ class User extends RestController
      */
     public function userList()
     {
-        return $this->respondApi($this->modelObj->getList());
+        return $this->respondApi($this->modelObj->getList($this->request->getGet()));
     }
 
     /**
@@ -82,5 +82,53 @@ class User extends RestController
     public function updateUserInfo()
     {
         return $this->respondApi($this->modelObj->updateUserInfo($this->request->getJSON(true)));
+    }
+
+    /**
+     * Notes: 改变用户状态 如:启用
+     *
+     * @throws \ReflectionException
+     * @author: chentulin
+     * Date: 2020/9/7
+     * Time: 10:54
+     */
+    public function changeStatus()
+    {
+        $id     = (int)$this->request->getGet('id');
+        $type   = (string)$this->request->getGet('type');
+        $status = (int)$this->request->getGet('status');
+        if (!$id || !$type) {
+            return $this->respondApi(['code' => 10009, '无法获取参数']);
+        }
+        return $this->respondApi($this->modelObj->changeStatus($id, $type, $status));
+    }
+
+    /**
+     * Notes: 更新管理员信息
+     *
+     * @throws \ReflectionException
+     * @author: chentulin
+     * Date: 2020/9/16
+     * Time: 11:08
+     */
+    public function updateAdminInfo()
+    {
+        $data = $this->request->getJSON(true);
+        if (!$data['id']) {
+            return $this->respondApi(['code' => 10009, '无法获取参数']);
+        }
+        return $this->respondApi($this->modelObj->updateAdminInfo((int)$data['id'], $data));
+    }
+
+    /**
+     * Notes: 获取负责人
+     *
+     * @author: chentulin
+     * Date: 2020/9/28
+     * Time: 10:15
+     */
+    public function normalUserList()
+    {
+        return $this->respondApi($this->modelObj->normalUserList());
     }
 }

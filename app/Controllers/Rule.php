@@ -54,8 +54,9 @@ class Rule extends RestController
      */
     public function getMenu()
     {
+        $id = $this->request->getGet('id');
         // 暂时未做权限 区分
-        $res = $this->modelObj->getMenuByRole();
+        $res = $this->modelObj->getMenuByRole((int)$id);
         return $this->respondApi($res);
     }
 

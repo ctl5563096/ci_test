@@ -24,7 +24,7 @@ class RuleModel extends BaseModel
     protected $dateFormat = 'datetime';
     // 更新或者插入时候 允许插入或者更新的字段
     protected $allowedFields = [
-        'rule_name', 'pid', 'is_menu', 'url', 'icon', 'controller', 'action',
+        'rule_name', 'pid', 'is_menu', 'url', 'icon', 'controller', 'action', 'sort' ,'avatar'
     ];
     // 验证规则
     protected $validationRules = [
@@ -75,10 +75,28 @@ class RuleModel extends BaseModel
      * Author: chentulin
      * DateTime: 2020/8/5 16:56
      * E-MAIL: <chentulinys@163.com>
+     * @param int $id
+     * @return array
      */
-    public function getMenuByRole()
+    public function getMenuByRole(int $id)
     {
-        $menuArr     = $this->select('id ,pid ,url ,icon ,rule_name')->where('is_menu', 1)->findAll();
+        // 判断是不是自己的超级权限 如果不是就
+        if ($id === 1) {
+            $menuArr = $this->select('id ,pid ,url ,icon ,rule_name')
+                ->where('is_menu', 1)
+                ->orderBy('sort', 'DESC')
+                ->findAll();
+        } else {
+            $query   = $this->connect->table('rule as a');
+            $menuArr = $query->select('a.id,a.pid,a.url,a.icon,a.rule_name')
+                ->join('role_rule as c', 'c.rule = a.id', 'left')
+                ->join('admin_user as b', 'b.role = c.role', 'left')
+                ->where('a.is_menu', 1)
+                ->where('b.id', $id)
+                ->orderBy('a.sort', 'DESC')
+                ->get()
+                ->getResultArray();
+        }
         $this->menus = $menuArr;
         // 整理菜单
         return $this->getMenuList($menuArr);
@@ -365,7 +383,7 @@ class RuleModel extends BaseModel
     public function getAllAuth(int $id)
     {
         $query = $this->connect->table('role_rule as rr');
-        $query->select("CONCAT(cr.controller,'\',cr.`action` ) as auth_str");
+        $query->select("CONCAT(cr.controller,'\\\\',cr.`action` ) as auth_str");
         $query->join('admin_user as cau', 'rr.role = cau.role', 'left');
         $query->join('rule as cr', 'cr.id = rr.rule', 'left');
         $query->join('role as cr2', 'cr2.id = rr.role`', 'left');
@@ -395,22 +413,22 @@ class RuleModel extends BaseModel
         $query->where('c1.id', $id);
         $res     = $query->get()->getResultArray();
         $ruleArr = [];
-        foreach ($res as $val){
+        foreach ($res as $val) {
             $ruleArr[] = $val['id_first'];
             $ruleArr[] = $val['id_second'];
             $ruleArr[] = $val['id_third'];
         }
         // 新删除权限数组
-        $newArr = array_map(function (&$val){
+        $newArr   = array_map(function (&$val) {
             return (int)$val;
-        },array_unique(array_filter($ruleArr)));
+        }, array_unique(array_filter($ruleArr)));
         $queryDel = $this->connect->table('rule');
-        $queryDel->whereIn('id' ,$newArr);
+        $queryDel->whereIn('id', $newArr);
         $querySql = $queryDel->delete();
-        if ($querySql){
+        if ($querySql) {
             return ['res' => true];
-        }else{
-            return ['code' => 20020 ,'msg' => '删除权限失败'];
+        } else {
+            return ['code' => 20020, 'msg' => '删除权限失败'];
         }
     }
 
