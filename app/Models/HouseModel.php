@@ -5,6 +5,7 @@ namespace App\Models;
 
 
 use App\Common\BaseModel;
+use App\Models\UserModel;
 
 /**
  * 房屋模型
@@ -26,7 +27,17 @@ class HouseModel extends BaseModel
     protected $dateFormat = 'datetime';
     // 更新或者插入时候 允许插入或者更新的字段
     protected $allowedFields = [
-        'house_name', 'address', 'master', 'size', 'is_del', 'charger', 'is_all', 'type', 'create_time', 'room_num'
+        'house_name', 'address', 'master', 'size', 'is_del', 'charger', 'is_all', 'type', 'create_time', 'room_num',
+    ];
+    // 传参类型验证
+    public $paramsType = [
+        'house_name'  => 'string',
+        'address'     => 'string',
+        'master'      => 'string',
+        'size'        => 'int',
+        'charger'     => 'int',
+        'create_time' => 'date',
+        'room_num'    => 'int',
     ];
     // 验证规则
     protected $validationRules = [
@@ -60,7 +71,7 @@ class HouseModel extends BaseModel
         ],
         'room_num'    => [
             'required' => '房间数',
-        ]
+        ],
     ];
 
     // 是否跳过验证数据
@@ -78,9 +89,13 @@ class HouseModel extends BaseModel
      */
     public function insertHouse(array $params)
     {
-        $userId = $this->insert($params, true);
-        if ($userId === false) return ['code' => 70001, '注册房屋信息失败', current($this->errors())];
-        else return (int)$userId;
+        $master = (new UserModel())->getUserInfo((int)$params['charger']);
+        if (!$master) return ['code' => 70002, 'msg' => '注册房屋信息失败', 'realMsg' => '获取法人个人信息失败'];
+        $params['master'] = $master['user_name'];
+        $this->transformationType($params);
+        $houseId = $this->insert($params, true);
+        if ($houseId === false) return ['code' => 70001, 'msg' => '注册房屋信息失败', 'realMsg' => current($this->errors())];
+        else return (int)$houseId;
     }
 
     /**
