@@ -67,8 +67,34 @@ class Data extends RestController
      * Date: 2020/9/28
      * Time: 15:32
      */
-    public function changeHouseData()
+    public function updateHouseData()
     {
+        $data = $this->request->getJSON(true);
+        if (isset($data['id'])){
+            $this->respondApi(['code' => 10009, '无法获取参数id']);
+        }
+        $res = $this->houseModel->updateInfo($data);
+        if (!$res){
+            return $this->respondApi(['code' => 10010, '更新失败']);
+        }else{
+            return $this->respondApi([]);
+        }
+    }
 
+    /**
+     * Notes: 根据houseId获取房屋详细信息
+     *
+     * Author: chentulin
+     * DateTime: 2021/1/29 15:31
+     * E-MAIL: <chentulinys@163.com>
+     */
+    public function getInfoById()
+    {
+        $houseId = (int)$this->request->getPostGet('id');
+        if (!$houseId){
+            $this->respondApi(['code' => 10009, '无法获取参数']);
+        }
+        $info = $this->houseModel->getInfoByHouseId($houseId);
+        return $this->respondApi($info);
     }
 }

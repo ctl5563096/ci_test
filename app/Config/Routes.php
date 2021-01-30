@@ -56,6 +56,8 @@ $routes->post('upload', 'Upload::upload');
 // 房屋类
 $routes->post('house', 'Data::insertHouse');
 $routes->get('house', 'Data::getHouseList');
+$routes->put('house', 'Data::updateHouseData');
+$routes->get('houseInfo', 'Data::getInfoById');
 /**
  * --------------------------------------------------------------------
  * Additional Routing

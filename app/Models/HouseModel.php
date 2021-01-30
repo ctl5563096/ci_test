@@ -29,7 +29,7 @@ class HouseModel extends BaseModel
     protected $allowedFields = [
         'house_name', 'address', 'master', 'size', 'is_del', 'charger', 'is_all', 'type', 'create_time', 'room_num',
     ];
-    // 传参类型验证
+    // 传参类型强转
     public $paramsType = [
         'house_name'  => 'string',
         'address'     => 'string',
@@ -147,5 +147,52 @@ class HouseModel extends BaseModel
         $list       = $query->get()->getResultArray();
         $count      = $queryCount->countAll();
         return ['count' => $count, 'list' => $list];
+    }
+
+    /**
+     * Notes: 获取单个房屋信息
+     *
+     * Author: chentulin
+     * DateTime: 2021/1/29 15:50
+     * E-MAIL: <chentulinys@163.com>
+     * @param int $id
+     * @return array
+     */
+    public function getInfoByHouseId(int $id):array
+    {
+        $query = $this->connect->table($this->table);
+        $query->select('*');
+        $query->where('id',$id);
+        $query->limit(1);
+        $res = $query->get()->getResultArray();
+        if ($res){
+            return current($res);
+        }else{
+            return ['code' => 10010, '获取数据失败'];
+        }
+    }
+
+    /**
+     * Notes: 更新房屋信息
+     *
+     * Author: chentulin
+     * DateTime: 2021/1/30 11:06
+     * E-MAIL: <chentulinys@163.com>
+     * @param array $data
+     * @return bool
+     */
+    public function updateInfo(array $data):bool
+    {
+        $master = (new UserModel())->getUserInfo((int)$data['charger']);
+        if (!$master) return false;
+        $data['master'] = $data['user_name'];
+        $this->transformationType($data);
+        $id = (int)$data['id'];
+        unset($data['id']);
+        $query = $this->connect->table($this->table);
+        $query->where('id',$id);
+        $res = $query->update($data);
+        if (!$res) return false;
+        return true;
     }
 }
