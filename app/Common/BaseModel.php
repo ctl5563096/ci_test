@@ -4,6 +4,7 @@
 namespace App\Common;
 
 
+use CodeIgniter\Database\BaseBuilder;
 use CodeIgniter\Database\ConnectionInterface;
 use CodeIgniter\Model;
 use CodeIgniter\Validation\ValidationInterface;
@@ -52,5 +53,19 @@ class BaseModel extends Model
                     break;
             }
         }
+    }
+
+    /**
+     * Notes: 获取查询sql语句
+     *
+     * Author: chentulin
+     * DateTime: 2021/2/1 17:02
+     * E-MAIL: <chentulinys@163.com>
+     * @param BaseBuilder $builder
+     * @return string
+     */
+    public function getSql(BaseBuilder $builder)
+    {
+        return $builder->getCompiledSelect();
     }
 }

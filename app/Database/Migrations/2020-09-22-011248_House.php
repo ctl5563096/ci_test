@@ -55,6 +55,6 @@ class House extends Migration
 
     public function down()
     {
-        $this->forge->dropTable('file');
+        $this->forge->dropTable('house');
     }
 }

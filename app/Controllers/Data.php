@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Common\RestController;
+use App\Models\HomeModel;
 use App\Models\HouseModel;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -15,14 +16,17 @@ use ReflectionException;
  * Class Data
  * @package App\Controllers
  * @property HouseModel $houseModel
+ * @property HomeModel $homeModel
  */
 class Data extends RestController
 {
     protected $houseModel;
+    protected $homeModel;
 
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
         $this->houseModel = new HouseModel();
+        $this->homeModel  = new HomeModel();
         parent::initController($request, $response, $logger);
     }
 
@@ -70,13 +74,13 @@ class Data extends RestController
     public function updateHouseData()
     {
         $data = $this->request->getJSON(true);
-        if (isset($data['id'])){
+        if (isset($data['id'])) {
             $this->respondApi(['code' => 10009, '无法获取参数id']);
         }
         $res = $this->houseModel->updateInfo($data);
-        if (!$res){
+        if (!$res) {
             return $this->respondApi(['code' => 10010, '更新失败']);
-        }else{
+        } else {
             return $this->respondApi([]);
         }
     }
@@ -91,10 +95,26 @@ class Data extends RestController
     public function getInfoById()
     {
         $houseId = (int)$this->request->getPostGet('id');
-        if (!$houseId){
+        if (!$houseId) {
             $this->respondApi(['code' => 10009, '无法获取参数']);
         }
         $info = $this->houseModel->getInfoByHouseId($houseId);
         return $this->respondApi($info);
+    }
+
+    /**
+     * Notes: 获取房间列表
+     *
+     * Author: chentulin
+     * DateTime: 2021/2/1 15:59
+     * E-MAIL: <chentulinys@163.com>
+     */
+    public function getHomeList()
+    {
+        $homeId = (int)$this->request->getPostGet('id');
+        if (!$homeId) {
+            $this->respondApi(['code' => 10009, '无法获取参数']);
+        }
+        $list = $this->homeModel->getHomeListByHomeId($homeId);
     }
 }
