@@ -87,7 +87,7 @@ class ParameterModel extends BaseModel
     public function getList(int $page, int $pageSize, string $keywords, $isPage = -1, $sort = false, $is_enabled = false, $other = []): array
     {
         $query = $this->connect->table($this->table);
-        $query->select('name,code,is_enabled,para_name,para_value');
+        $query->select('id,name,code,is_enabled,para_name,para_value');
         if ($is_enabled) {
             $query->where('is_enabled', (int)$other['is_enabled']);
         }

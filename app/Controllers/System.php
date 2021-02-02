@@ -85,6 +85,8 @@ class System extends RestController
             $this->respondApi(['code' => 10009, '无法获取参数']);
         }
         $info = $this->parameterModel->getInfoById((int)$params['id']);
+        $info['para_code'] = $info['code'];
+        unset($info['code']);
         return $this->respondApi($info);
     }
 }
