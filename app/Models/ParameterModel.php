@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Common\BaseModel;
 use mysqli_sql_exception;
+use phpDocumentor\Reflection\Types\False_;
 
 /**
  * 参数模型
@@ -80,27 +81,34 @@ class ParameterModel extends BaseModel
      * @param int $isPage
      * @param bool $sort
      * @param bool $is_enabled
+     * @param array $other
      * @return array
      */
-    public function getList(int $page, int $pageSize, string $keywords, $isPage = -1,$sort = false,$is_enabled = false): array
+    public function getList(int $page, int $pageSize, string $keywords, $isPage = -1, $sort = false, $is_enabled = false, $other = []): array
     {
         $query = $this->connect->table($this->table);
         $query->select('name,code,is_enabled,para_name,para_value');
-        if ($is_enabled){
-            $query->where('is_enabled', 2);
+        if ($is_enabled) {
+            $query->where('is_enabled', (int)$other['is_enabled']);
         }
-//        if ($keywords){
-//
-//        }
+        // 关键字搜索
+        if ($keywords) {
+            $query->groupStart();
+            $query->like('code', $keywords);
+            $query->orLike('name', $keywords);
+            $query->orLike('para_name', $keywords);
+            $query->groupEnd();
+        }
         $count = 0;
         if ($isPage !== -1) {
             $query->limit((int)$pageSize, ((int)$page - 1) * (int)$pageSize);
             $queryCount = clone $query;
             $count      = $queryCount->countAll();
         }
-        $list = $query->get(null,0,false)->getResultArray();
-        if (!$list){
-            return ['code' => 90001 ,'msg' => 'sql错误','sql' => $this->getSql($query)];
+        $query->orderBy('add_time','DESC');
+        $list = $query->get(null, 0, false)->getResultArray();
+        if ($list === false) {
+            return ['code' => 90001, 'msg' => 'sql错误', 'sql' => $this->getSql($query)];
         }
         if ($isPage !== -1) {
             $res = [
@@ -108,13 +116,36 @@ class ParameterModel extends BaseModel
                 'list'  => $list,
             ];
         } else {
-            if ($sort){
-                $list = array_column($list,null,'code');
+            $newArr = [];
+            if ($sort) {
+                foreach ($list as $key => $item) {
+                    $newArr[$item['code']][] = $item;
+                }
             }
             $res = [
-                'list' => $list,
+                'list' => $newArr,
             ];
         }
         return $res;
+    }
+
+    /**
+     * Notes:
+     * Author: chentulin
+     * DateTime: 2021/2/2 19:55
+     * E-MAIL: <chentulinys@163.com>
+     * @param int $id
+     * @return array
+     */
+    public function getInfoById(int $id): array
+    {
+        $query = $this->connect->table($this->table);
+        $query->select('*');
+        $query->where('id',$id);
+        $info = $query->get()->getRowArray();
+        if ($info === false){
+            return ['code' => 90001, 'msg' => 'sql错误', 'sql' => $this->getSql($query)];
+        }
+        return $info;
     }
 }

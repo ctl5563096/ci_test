@@ -60,6 +60,8 @@ $routes->put('house', 'Data::updateHouseData');
 $routes->get('houseInfo', 'Data::getInfoById');
 // 系统类
 $routes->get('getParameterInit','System::getParameterInit');
+$routes->get('getParameterList','System::getParameterList');
+$routes->get('getParameterDetail','System::getParameterDetail');
 /**
  * --------------------------------------------------------------------
  * Additional Routing
