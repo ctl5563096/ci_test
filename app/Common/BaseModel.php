@@ -36,6 +36,9 @@ class BaseModel extends Model
     public function transformationType(array &$params)
     {
         foreach ($this->paramsType as $key => $value){
+            if (!$params[$key]){
+                continue;
+            }
             switch ($value){
                 case 'int':
                     $params[$key] = (int)$params[$key];

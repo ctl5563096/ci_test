@@ -105,7 +105,7 @@ class ParameterModel extends BaseModel
             $queryCount = clone $query;
             $count      = $queryCount->countAll();
         }
-        $query->orderBy('add_time','DESC');
+        $query->orderBy('add_time', 'DESC');
         $list = $query->get(null, 0, false)->getResultArray();
         if ($list === false) {
             return ['code' => 90001, 'msg' => 'sql错误', 'sql' => $this->getSql($query)];
@@ -141,11 +141,57 @@ class ParameterModel extends BaseModel
     {
         $query = $this->connect->table($this->table);
         $query->select('*');
-        $query->where('id',$id);
+        $query->where('id', $id);
         $info = $query->get()->getRowArray();
-        if ($info === false){
+        if ($info === false) {
             return ['code' => 90001, 'msg' => 'sql错误', 'sql' => $this->getSql($query)];
         }
         return $info;
+    }
+
+    /**
+     * Notes: 更新参数信息
+     *
+     * Author: chentulin
+     * DateTime: 2021/2/3 11:41
+     * E-MAIL: <chentulinys@163.com>
+     * @param array $data
+     * @return array
+     */
+    public function updateInfo(array $data): array
+    {
+        $id = $data['id'];
+        unset($data['id']);
+        $data['code'] = $data['para_code'];
+        unset($data['para_code']);
+        $data['update_time'] = date('Y-m-d H:i:s');
+        $this->transformationType($data);
+        $query = $this->connect->table($this->table);
+        $query->where('id', $id);
+        $res = $query->update($data);
+        if (!$res) {
+            return ['code' => 90002, 'msg' => '更新失败', 'realMsg' => '更新失败'];
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * Notes: 新增
+     *
+     * Author: chentulin
+     * DateTime: 2021/2/3 15:21
+     * E-MAIL: <chentulinys@163.com>
+     * @param array $data
+     * @throws \ReflectionException
+     */
+    public function addRecord(array $data)
+    {
+        $data['code'] = $data['para_code'];
+        unset($data['para_code']);
+        $this->transformationType($data);
+        $parameterId = $this->insert($data,true);
+        if ($parameterId === false) return ['code' => 90003, 'msg' => '插入参数失败', 'realMsg' => current($this->errors())];
+        else return (int)$parameterId;
     }
 }

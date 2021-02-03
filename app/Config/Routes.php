@@ -62,6 +62,8 @@ $routes->get('houseInfo', 'Data::getInfoById');
 $routes->get('getParameterInit','System::getParameterInit');
 $routes->get('getParameterList','System::getParameterList');
 $routes->get('getParameterDetail','System::getParameterDetail');
+$routes->put('parameter','System::editParameter');
+$routes->post('parameter','System::addParameter');
 /**
  * --------------------------------------------------------------------
  * Additional Routing
