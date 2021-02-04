@@ -61,7 +61,7 @@ writable/uploads/*
 !writable/uploads/index.html
 
 writable/debugbar/*
-public/*
+
 
 php_errors.log
 
@@ -86,6 +86,9 @@ phpunit
 #-------------------------
 vendor/
 /app/Config/Cache.php
+/writable
+/public/uploads
+
 
 #-------------------------
 # IDE / Development Files
