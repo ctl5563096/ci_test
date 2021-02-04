@@ -35,7 +35,7 @@ class Database extends \CodeIgniter\Database\Config
 		'username' => 'chentulin',
 		'password' => 'A5563096z',
 		'database' => 'swoft',
-		'DBDriver' => 'MYSQLI',
+		'DBDriver' => 'MySQLi',
 		'DBPrefix' => 'ci_',
 		'pConnect' => false,
 		'DBDebug'  => (ENVIRONMENT !== 'production'),
