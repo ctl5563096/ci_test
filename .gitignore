@@ -85,6 +85,7 @@ phpunit
 # Composer
 #-------------------------
 vendor/
+/app/Config/Cache.php
 
 #-------------------------
 # IDE / Development Files
@@ -92,7 +93,7 @@ vendor/
 
 # Modules Testing
 _modules/*
-
+*.log
 # phpenv local config
 .php-version
 

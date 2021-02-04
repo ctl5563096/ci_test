@@ -94,10 +94,10 @@ class Cache extends BaseConfig
 	*/
 	public $redis = [
 		'host'     => '127.0.0.1',
-		'password' => 'A5563096z',
+		'password' => null,
 		'port'     => 6379,
 		'timeout'  => 0,
-		'database' => 7,
+		'database' => 0,
 	];
 
 	/*
