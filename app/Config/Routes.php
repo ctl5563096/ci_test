@@ -58,12 +58,17 @@ $routes->post('house', 'Data::insertHouse');
 $routes->get('house', 'Data::getHouseList');
 $routes->put('house', 'Data::updateHouseData');
 $routes->get('houseInfo', 'Data::getInfoById');
+
 // 系统类
 $routes->get('getParameterInit','System::getParameterInit');
 $routes->get('getParameterList','System::getParameterList');
 $routes->get('getParameterDetail','System::getParameterDetail');
 $routes->put('parameter','System::editParameter');
 $routes->post('parameter','System::addParameter');
+$routes->delete('parameter','System::deleteRecord');
+
+// 客户类
+$routes->post('HomeCustomer','HomeCustomer::add');
 /**
  * --------------------------------------------------------------------
  * Additional Routing

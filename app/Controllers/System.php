@@ -117,10 +117,32 @@ class System extends RestController
      */
     public function addParameter()
     {
-        $res  = $this->parameterModel->addRecord($this->request->getJSON(true));
+        $res = $this->parameterModel->addRecord($this->request->getJSON(true));
         if (!is_int($res)) {
             return $this->respondApi($res);
         }
         return $this->respondApi(['id' => $res]);
+    }
+
+    /**
+     * Notes:
+     * Author: chentulin
+     * DateTime: 2021/2/5 17:28
+     * E-MAIL: <chentulinys@163.com>
+     * @return array|void
+     */
+    public function deleteRecord()
+    {
+        $params = $this->request->getGet();
+        if (!isset($params['id'])) {
+            $this->respondApi(['code' => 10009, '无法获取参数']);
+        }
+        $info = $this->parameterModel->delete((int)$params['id']);
+        if (!$info) {
+            $info = ['code' => 10012, '删除失败'];
+        }else{
+            $info = [];
+        }
+        return $this->respondApi($info);
     }
 }
