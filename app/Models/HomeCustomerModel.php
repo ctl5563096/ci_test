@@ -33,7 +33,7 @@ class HomeCustomerModel extends BaseModel
         'id_card'     => 'string',
         'add_type'    => 'int',
         'sex'         => 'int',
-        'update_by'   => 'int',
+        'update_by'   => 'string',
         'update_time' => 'date',
     ];
     // 验证规则
@@ -111,15 +111,70 @@ class HomeCustomerModel extends BaseModel
     public function getCustomerList(array $params)
     {
         $query = $this->connect->table('customer_home as a');
-        $query->select('a.real_name , case when sex = 1 then "男" when sex = 2 then "女" else "保密" end as sex, a.openid, a.phone_num ,a.id_card ,a.add_time ,b.para_name as add_type',false);
-        $query->join('ci_parameter as b',' a.add_type = b.para_value and code = "customerOrigin"' ,'left');
+        $query->select('a.id,a.real_name ,case when sex = 1 then "男" when sex = 2 then "女" else "保密" end as sex, a.openid, a.phone_num ,a.id_card ,a.add_time ,b.para_name as add_type', false);
+        $query->join('ci_parameter as b', ' a.add_type = b.para_value and code = "customerOrigin"', 'left');
+        // 关键字搜索
+        if ($params['keywords']) {
+            $query->like('a.real_name', trim($params['keywords']));
+            $query->orLike('a.id_card', trim($params['keywords']));
+            $query->orLike('a.phone_num', trim($params['keywords']));
+        }
+        // 新增来源搜索
+        if ($params['origin']) {
+            $query->where('a.add_type', (int)$params['origin']);
+        }
         $query->limit((int)$params['pageSize'], ((int)$params['page'] - 1) * (int)$params['pageSize']);
         $queryCount = clone $query;
         $list       = $query->get()->getResultArray();
-        if (!$list){
+        if ($list === false) {
             return ['code' => 90001, 'msg' => 'sql错误', 'sql' => $this->getSql($query)];
         }
-        $count      = $queryCount->countAll();
+        $count = $queryCount->countAll();
         return ['count' => $count, 'list' => $list];
+    }
+
+    /**
+     * Notes: 获取用户详情
+     *
+     * Author: chentulin
+     * DateTime: 2021/2/22 19:43
+     * E-MAIL: <chentulinys@163.com>
+     * @param int $id
+     */
+    public function getInfoByCustomerId(int $id): array
+    {
+        $query = $this->connect->table('customer_home as a');
+        $query->select('a.*,b.para_name as add_type');
+        $query->join('ci_parameter as b', ' a.add_type = b.para_value and code = "customerOrigin"', 'left');
+        $query->where('a.id', $id);
+        $query->limit(1);
+        $res = $query->get()->getResultArray();
+        if ($res) {
+            return current($res);
+        } else {
+            return ['code' => 10010, '获取数据失败'];
+        }
+    }
+
+    /**
+     * Notes: 更新租客用户信息
+     *
+     * Author: chentulin
+     * DateTime: 2021/2/22 20:20
+     * E-MAIL: <chentulinys@163.com>
+     * @param array $info
+     */
+    public function updateInfo(array $info): bool
+    {
+        $info['update_time'] = date('Y-m-d H:i:s');
+        $this->transformationType($info);
+        $id = $info['id'];
+        unset($info['id']);
+        unset($info['add_type']);
+        $query = $this->connect->table($this->table);
+        $query->where('id', $id);
+        $res = $query->update($info);
+        if (!$res) return false;
+        return true;
     }
 }

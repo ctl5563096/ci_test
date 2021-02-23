@@ -70,6 +70,8 @@ $routes->delete('parameter','System::deleteRecord');
 // 客户类
 $routes->post('homeCustomer','HomeCustomer::add');
 $routes->get('homeCustomer','HomeCustomer::getList');
+$routes->get('homeCustomerDetail','HomeCustomer::detail');
+$routes->put('homeCustomer','HomeCustomer::updateInfo');
 /**
  * --------------------------------------------------------------------
  * Additional Routing

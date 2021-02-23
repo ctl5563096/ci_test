@@ -4,7 +4,9 @@
 namespace App\Controllers;
 
 
-use App\Common\RestController;;
+use App\Common\RestController;
+
+;
 
 use App\Models\HomeCustomerModel;
 use CodeIgniter\HTTP\RequestInterface;
@@ -36,7 +38,7 @@ class HomeCustomer extends RestController
     public function add()
     {
         $data = $this->request->getJSON(true);
-        if (!$data){
+        if (!$data) {
             $this->respondApi(['code' => 10009, '无法获取参数']);
         }
         $id = $this->homeCustomerModel->insertHomeCustomer($data);
@@ -61,5 +63,43 @@ class HomeCustomer extends RestController
             $params['pageSize'] = 15;
         }
         return $this->respondApi($this->homeCustomerModel->getCustomerList($params));
+    }
+
+    /**
+     * Notes: 获取详情
+     *
+     * Author: chentulin
+     * DateTime: 2021/2/22 19:41
+     * E-MAIL: <chentulinys@163.com>
+     */
+    public function detail()
+    {
+        $customerId = (int)$this->request->getPostGet('id');
+        if (!$customerId) {
+            $this->respondApi(['code' => 10009, '无法获取参数']);
+        }
+        $info = $this->homeCustomerModel->getInfoByCustomerId($customerId);
+        return $this->respondApi($info);
+    }
+
+    /**
+     * Notes: 更新租客详情
+     *
+     * Author: chentulin
+     * DateTime: 2021/2/22 20:15
+     * E-MAIL: <chentulinys@163.com>
+     */
+    public function updateInfo()
+    {
+        $data = $this->request->getJSON(true);
+        if (isset($data['id'])) {
+            $this->respondApi(['code' => 10009, '无法获取参数id']);
+        }
+        $res = $this->homeCustomerModel->updateInfo($data);
+        if (!$res) {
+            return $this->respondApi(['code' => 10010, '更新失败']);
+        } else {
+            return $this->respondApi([]);
+        }
     }
 }
