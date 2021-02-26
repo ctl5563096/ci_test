@@ -6,8 +6,6 @@ namespace App\Controllers;
 
 use App\Common\RestController;
 
-;
-
 use App\Models\HomeCustomerModel;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;

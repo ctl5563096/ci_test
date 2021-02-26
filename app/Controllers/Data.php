@@ -113,8 +113,9 @@ class Data extends RestController
     {
         $homeId = (int)$this->request->getPostGet('id');
         if (!$homeId) {
-            $this->respondApi(['code' => 10009, '无法获取参数']);
+            return $this->respondApi(['code' => 10009, '无法获取参数']);
         }
-        $list = $this->homeModel->getHomeListByHomeId($homeId);
+        $list = $this->homeModel->getHomeListByHouseId($homeId);
+        return $this->respondApi($list);
     }
 }

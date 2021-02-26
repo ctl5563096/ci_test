@@ -8,6 +8,12 @@ use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Config\Services;
 
+/**
+ * 接口调用过滤器 主要负责权限验证
+ *
+ * Class LoginFilter
+ * @package App\Filter
+ */
 class LoginFilter implements FilterInterface
 {
     use \CodeIgniter\API\ResponseTrait;

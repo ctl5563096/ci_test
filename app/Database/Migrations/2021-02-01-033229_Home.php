@@ -25,6 +25,9 @@ class Home extends Migration
             'size'        => [
                 'type' => 'INT', 'constraint' => 11, 'default' => 0, 'unsigned' => TRUE, 'comment' => '房间面积',
             ],
+            'house_id'        => [
+                'type' => 'INT', 'constraint' => 11, 'default' => 0, 'unsigned' => TRUE, 'comment' => '房屋id',
+            ],
             'type'        => [
                 'type' => 'INT', 'constraint' => 11, 'default' => 0, 'unsigned' => TRUE, 'comment' => '房屋类型',
             ],
@@ -44,6 +47,7 @@ class Home extends Migration
         $this->forge->addKey('id', TRUE);
         $this->forge->addKey('charger', false);
         $this->forge->addKey('customer_id', false);
+        $this->forge->addKey('house_id', false);
         $this->forge->addField("in_time timestamp DEFAULT NULL COMMENT '入住时间'");
         $this->forge->addField("out_time timestamp DEFAULT NULL COMMENT '本次退租时间'");
         $this->forge->addField("add_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'");

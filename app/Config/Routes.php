@@ -58,6 +58,7 @@ $routes->post('house', 'Data::insertHouse');
 $routes->get('house', 'Data::getHouseList');
 $routes->put('house', 'Data::updateHouseData');
 $routes->get('houseInfo', 'Data::getInfoById');
+$routes->get('home','Data::getHomeList');
 
 // 系统类
 $routes->get('getParameterInit','System::getParameterInit');
