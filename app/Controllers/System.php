@@ -5,6 +5,7 @@ namespace App\Controllers;
 
 
 use App\Common\RestController;
+use App\Models\CarouselModel;
 use App\Models\ParameterModel;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -16,14 +17,17 @@ use Psr\Log\LoggerInterface;
  * Class System
  * @package App\Controllers
  * @property ParameterModel $parameterModel
+ * @property CarouselModel $carouselModel
  */
 class System extends RestController
 {
     protected $parameterModel;
+    protected $carouselModel;
 
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
         $this->parameterModel = new ParameterModel();
+        $this->carouselModel  = new CarouselModel();
         parent::initController($request, $response, $logger);
     }
 
@@ -140,9 +144,27 @@ class System extends RestController
         $info = $this->parameterModel->delete((int)$params['id']);
         if (!$info) {
             $info = ['code' => 10012, '删除失败'];
-        }else{
+        } else {
             $info = [];
         }
         return $this->respondApi($info);
+    }
+
+    /**
+     * Notes: 获取所有的轮播图
+     *
+     * Author: chentulin
+     * DateTime: 2021/3/1 16:32
+     * E-MAIL: <chentulinys@163.com>
+     */
+    public function getCarousel()
+    {
+        $params = $this->request->getGet();
+        if (!isset($params['page']) || !isset($params['pageSize'])) {
+            $params['page']     = 1;
+            $params['pageSize'] = 15;
+        }
+        $list = $this->carouselModel->getList($params);
+        return $this->respondApi($list);
     }
 }

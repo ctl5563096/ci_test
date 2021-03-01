@@ -5,8 +5,6 @@ namespace App\Models;
 
 
 use App\Common\BaseModel;
-use mysqli_sql_exception;
-use phpDocumentor\Reflection\Types\False_;
 
 /**
  * 参数模型

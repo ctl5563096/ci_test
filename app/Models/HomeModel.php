@@ -107,7 +107,7 @@ class HomeModel extends BaseModel
         $query->join('parameter as c', 'b.add_type = c.para_value and c.code = "customerOrigin" ', 'left');
         $query->join('admin_user as d', 'a.charger = d.id ', 'left');
         $query->join('house as f', 'a.house_id = f.id', 'left');
-        $query->select('a.*,b.real_name,c.para_name as origin,d.user_name as charger,f.address,if(a.is_pay = 2 ,"已交租" ,"未交租") as pay ');
+        $query->select('a.*,b.real_name,c.para_name as origin,d.user_name as charger,f.address,if(a.is_pay = 2 ,"已交租" ,"未交租") as pay ,b.phone_num ,b.id_card ');
         $query->where('a.house_id', $id);
         $list = $query->get()->getResultArray();
         if ($list === false) {
