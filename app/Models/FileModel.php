@@ -26,7 +26,7 @@ class FileModel extends BaseModel
     protected $dateFormat = 'datetime';
     // 更新或者插入时候 允许插入或者更新的字段
     protected $allowedFields = [
-        'file_name', 'new_file_name', 'url', 'size', 'is_del', 'upload_time', 'del_time', 'type'
+        'file_name', 'new_file_name', 'url', 'size', 'is_del', 'upload_time', 'del_time', 'type',
     ];
     // 验证规则
     protected $validationRules = [
@@ -68,7 +68,7 @@ class FileModel extends BaseModel
         $res = $model->insert($data);
         if ($res) {
             // 更新对应的表
-            $res = $this->addField($data['type'], $other ,$data['url']);
+            $res = $this->addField($data['type'], $other, $data['url']);
             if (!$res) {
                 // 回滚事务
                 $this->db->transRollback();
@@ -122,6 +122,10 @@ class FileModel extends BaseModel
             case 'avatar':
                 $model = new UserModel();
                 $res   = $model->updateInfoForUserId((int)$other['id'], ['avatar' => $url]);
+                break;
+            case 'carousel':
+                $model = new CarouselModel();
+                $res   = $model->updateInfo((int)$other['id'], ['image_url' => $url, 'update_by' => $other['update_by'], 'update_time' => date('Y-m-d H:i:s')]);
                 break;
             default:
                 $url = $idUrl;

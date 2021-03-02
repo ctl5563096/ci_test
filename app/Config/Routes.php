@@ -68,6 +68,7 @@ $routes->put('parameter', 'System::editParameter');
 $routes->post('parameter', 'System::addParameter');
 $routes->delete('parameter', 'System::deleteRecord');
 $routes->get('carousel', 'System::getCarousel');
+$routes->get('carouselInfo', 'System::getInfoCarouselById');
 
 // 客户类
 $routes->post('homeCustomer', 'HomeCustomer::add');

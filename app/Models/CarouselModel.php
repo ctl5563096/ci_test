@@ -70,4 +70,46 @@ class CarouselModel extends BaseModel
             'list'  => $list,
         ];
     }
+
+    /**
+     * Notes: 获取详情
+     *
+     * Author: chentulin
+     * DateTime: 2021/3/2 17:15
+     * E-MAIL: <chentulinys@163.com>
+     * @param int $id
+     * @return array|mixed
+     */
+    public function getInfoCarouselById(int $id)
+    {
+        $query = $this->connect->table($this->table);
+        $query->select('*');
+        $query->where('id', $id);
+        $info = $query->get()->getRowArray();
+        if ($info === false) {
+            return ['code' => 90001, 'msg' => 'sql错误', 'sql' => $this->getSql($query)];
+        }
+        return $info;
+    }
+
+    /**
+     * Notes : 更新轮播图
+     *
+     * Author: chentulin
+     * DateTime: 2021/3/2 19:43
+     * E-MAIL: <chentulinys@163.com>
+     * @param int $id
+     * @param array $data
+     * @return bool
+     * @throws \ReflectionException
+     */
+    public function updateInfo(int $id ,array $data): bool
+    {
+        $userModel  = new self();
+        $res        = $userModel->update($id, $data);
+        if (!$res) {
+            return false;
+        }
+        return true;
+    }
 }

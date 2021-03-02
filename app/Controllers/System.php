@@ -167,4 +167,21 @@ class System extends RestController
         $list = $this->carouselModel->getList($params);
         return $this->respondApi($list);
     }
+
+    /**
+     * Notes: 通过Id获取轮播图详情
+     *
+     * Author: chentulin
+     * DateTime: 2021/3/2 17:14
+     * E-MAIL: <chentulinys@163.com>
+     */
+    public function getInfoCarouselById()
+    {
+        $params = $this->request->getGet();
+        if (!isset($params['id'])) {
+            $this->respondApi(['code' => 10009, '无法获取参数']);
+        }
+        $list = $this->carouselModel->getInfoCarouselById((int)$params['id']);
+        return $this->respondApi($list);
+    }
 }
