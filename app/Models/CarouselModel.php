@@ -100,9 +100,10 @@ class CarouselModel extends BaseModel
      * E-MAIL: <chentulinys@163.com>
      * @param int $id
      * @param array $data
+     * @return array
      * @throws \ReflectionException
      */
-    public function updateInfo(int $id ,array $data)
+    public function updateInfo(int $id ,array $data): array
     {
         $carouselModel  = new self();
         $res        = $carouselModel->update($id, $data);
@@ -140,6 +141,9 @@ class CarouselModel extends BaseModel
      */
     public function getEnableCarousel(): array
     {
-
+        $carouselModel  = new self();
+        $carouselModel->select('*');
+        $carouselModel->where('is_enabled',2);
+        return  $carouselModel->get()->getResultArray();
     }
 }
