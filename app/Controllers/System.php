@@ -143,7 +143,7 @@ class System extends RestController
         }
         $info = $this->parameterModel->delete((int)$params['id']);
         if (!$info) {
-            $info = ['code' => 10012, '删除失败'];
+            return $info = ['code' => 10012, '删除失败'];
         } else {
             $info = [];
         }
@@ -182,6 +182,53 @@ class System extends RestController
             $this->respondApi(['code' => 10009, '无法获取参数']);
         }
         $list = $this->carouselModel->getInfoCarouselById((int)$params['id']);
+        return $this->respondApi($list);
+    }
+
+    /**
+     * Notes: 更新轮播图信息
+     *
+     * Author: chentulin
+     * DateTime: 2021/3/3 10:29
+     * E-MAIL: <chentulinys@163.com>
+     * @throws \ReflectionException
+     */
+    public function updateCarousel()
+    {
+        $data = $this->request->getJSON(true);;
+        if (!isset($data['id'])) {
+            $this->respondApi(['code' => 10009, '无法获取参数id']);
+        }
+        $id = $data['id'];
+        unset($data['id']);
+        $res = $this->carouselModel->updateInfo((int)$id,$data);
+        return $this->respondApi($res);
+    }
+
+    /**
+     * Notes:
+     * Author: chentulin
+     * DateTime: 2021/3/3 14:53
+     * E-MAIL: <chentulinys@163.com>
+     * @throws \ReflectionException
+     */
+    public function addCarousel()
+    {
+        $data = $this->request->getJSON(true);
+        $res = $this->carouselModel->addRecord($data);
+        return $this->respondApi($res);
+    }
+
+    /**
+     * Notes: 获取所有的启用的轮播图
+     *
+     * Author: chentulin
+     * DateTime: 2021/3/3 15:31
+     * E-MAIL: <chentulinys@163.com>
+     */
+    public function getIndexCarousel()
+    {
+        $list = $this->carouselModel->getEnableCarousel();
         return $this->respondApi($list);
     }
 }

@@ -61,7 +61,7 @@ class Upload extends RestController
         // 获取文件后缀, 进行检查,防止上传其他代码文件
         $extension = $fileObj->getClientExtension();
         if (!in_array($extension, $extensionArr, true)) {
-            return $this->respondApi(['code' => 60005, 'msg' => '上传失败，文件类型不被允许']);
+            return $this->respondApi(['code' => 60006, 'msg' => '上传失败，文件类型不被允许']);
         }
         // 获取文件原文件名
         $fileName = $fileObj->getName();
@@ -72,7 +72,7 @@ class Upload extends RestController
         // 移动文件
         $res = $fileObj->move($path, $newName);
         if (!$res) {
-            return $this->respondApi(['code' => 60005, 'msg' => '上传失败，文件类型不被允许']);
+            return $this->respondApi(['code' => 60007, 'msg' => '上传失败，文件类型不被允许']);
         }
         // 保存到数据库的完整路径
         $allPath = $path . '/' . $newName;
@@ -92,7 +92,7 @@ class Upload extends RestController
         if ($res) {
             return $this->respondApi(['url' => $allPath]);
         } else {
-            return $this->respondApi(['code' => 60005, 'msg' => '上传失败，请联系管理员']);
+            return $this->respondApi(['code' => 60008, 'msg' => '上传失败，请联系管理员']);
         }
     }
 }

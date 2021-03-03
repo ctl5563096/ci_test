@@ -68,7 +68,7 @@ class FileModel extends BaseModel
         $res = $model->insert($data);
         if ($res) {
             // 更新对应的表
-            $res = $this->addField($data['type'], $other, $data['url']);
+            $res = $this->addField($data['type'], $other??[], $data['url']);
             if (!$res) {
                 // 回滚事务
                 $this->db->transRollback();
@@ -125,7 +125,17 @@ class FileModel extends BaseModel
                 break;
             case 'carousel':
                 $model = new CarouselModel();
-                $res   = $model->updateInfo((int)$other['id'], ['image_url' => $url, 'update_by' => $other['update_by'], 'update_time' => date('Y-m-d H:i:s')]);
+                if (isset($other['id'])){
+                    $res   = $model->updateInfo((int)$other['id'], ['image_url' => $url, 'update_by' => $other['update_by'], 'update_time' => date('Y-m-d H:i:s')]);
+                }else{
+                    // 无记录时上传轮播图
+                    $res = [];
+                }
+                if ($res !== []){
+                    $res = false;
+                }else{
+                    $res = true;
+                }
                 break;
             default:
                 $url = $idUrl;

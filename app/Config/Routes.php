@@ -34,6 +34,7 @@ $routes->setAutoRoute(true);
 $routes->post('home', 'Home::index');
 $routes->post('register', 'User::register');
 $routes->post('login', 'Login::login');
+
 // 用户类
 $routes->get('user', 'User::userList');
 $routes->get('user/getUserInfo', 'User::getUserInfo');
@@ -41,6 +42,7 @@ $routes->put('user', 'User::updateUserInfo');
 $routes->put('user/changeStatus', 'User::changeStatus');
 $routes->put('user/updateAdminInfo', 'User::updateAdminInfo');
 $routes->put('user/normalUserList', 'User::normalUserList');
+
 // 权限类
 $routes->post('rule', 'Rule::addRule');
 $routes->get('menu', 'Rule::getMenu');
@@ -51,8 +53,10 @@ $routes->put('rule', 'Rule::changeRoleByRule');
 $routes->delete('rule', 'Rule::delRule');
 $routes->get('ruleDetail', 'Rule::ruleDetail');
 $routes->put('editRule', 'Rule::editRule');
+
 // 上传类
 $routes->post('upload', 'Upload::upload');
+
 // 房屋类
 $routes->post('house', 'Data::insertHouse');
 $routes->get('house', 'Data::getHouseList');
@@ -69,6 +73,9 @@ $routes->post('parameter', 'System::addParameter');
 $routes->delete('parameter', 'System::deleteRecord');
 $routes->get('carousel', 'System::getCarousel');
 $routes->get('carouselInfo', 'System::getInfoCarouselById');
+$routes->put('carousel', 'System::updateCarousel');
+$routes->post('carousel', 'System::addCarousel');
+$routes->get('carouselIndex','System::getIndexCarousel');
 
 // 客户类
 $routes->post('homeCustomer', 'HomeCustomer::add');

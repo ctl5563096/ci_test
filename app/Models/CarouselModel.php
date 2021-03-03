@@ -100,16 +100,46 @@ class CarouselModel extends BaseModel
      * E-MAIL: <chentulinys@163.com>
      * @param int $id
      * @param array $data
-     * @return bool
      * @throws \ReflectionException
      */
-    public function updateInfo(int $id ,array $data): bool
+    public function updateInfo(int $id ,array $data)
     {
-        $userModel  = new self();
-        $res        = $userModel->update($id, $data);
+        $carouselModel  = new self();
+        $res        = $carouselModel->update($id, $data);
         if (!$res) {
-            return false;
+            return ['code' => '100010','msg' => $carouselModel->errors()];
         }
-        return true;
+        return [];
+    }
+
+    /**
+     * Notes: 新增记录
+     *
+     * Author: chentulin
+     * DateTime: 2021/3/3 14:57
+     * E-MAIL: <chentulinys@163.com>
+     * @param array $data
+     * @return array
+     * @throws \ReflectionException
+     */
+    public function addRecord(array $data): array
+    {
+        $this->transformationType($data);
+        $carouselId = $this->insert($data,true);
+        if ($carouselId === false) return ['code' => 90003, 'msg' => '插入参数失败', 'realMsg' => current($this->errors())];
+        else return ['id' => $carouselId];
+    }
+
+    /**
+     * Notes: 获取所有启用的轮播图
+     *
+     * Author: chentulin
+     * DateTime: 2021/3/3 15:33
+     * E-MAIL: <chentulinys@163.com>
+     * @return array
+     */
+    public function getEnableCarousel(): array
+    {
+
     }
 }
