@@ -63,9 +63,13 @@ class Jwt
             return ['res' => false, 'msg' => '签发时间过大'];
         }
 
-        //过期时间小宇当前服务器时间验证失败
-        if (isset($payload['exp']) && $payload['exp'] < time()) {
-            return ['res' => false, 'msg' => '过期时间小于服务器验证时间'];
+        //过期时间小宇当前服务器时间验证失败 如何做到验证通过后刷新redis
+        if (isset($payload['exp'])) {
+            if (!RedisClient::getInstance()->get('ci_' . $payload['exp'])) {
+                return ['res' => false, 'msg' => '过期时间小于服务器验证时间'];
+            } else {
+                RedisClient::getInstance()->expire('ci_' . $payload['exp'], 7200);
+            }
         }
 
 
@@ -99,5 +103,40 @@ class Jwt
             'HS256' => 'sha256',
         ];
         return self::base64UrlEncode(hash_hmac($alg_config[$alg], $input, $key, true));
+    }
+
+    /**
+     * Notes: 删除缓存里面信息
+     *
+     * Author: chentulin
+     * DateTime: 2021/3/5 15:39
+     * E-MAIL: <chentulinys@163.com>
+     * @param string $token
+     * @return bool
+     */
+    public static function delToken(string $token): bool
+    {
+        $tokens = explode('.', $token);
+
+        if (count($tokens) != 3) {
+            return false;
+        }
+
+        [$base64header, $base64payload, $sign] = $tokens;
+        $base64decodeheader = json_decode(self::base64UrlDecode($base64header), true);
+        if (empty($base64decodeheader['alg']))
+            return false;
+
+        //签名验证
+        if (self::signature($base64header . '.' . $base64payload, self::$key, $base64decodeheader['alg']) !== $sign) {
+            return false;
+        }
+
+        $payload = json_decode(self::base64UrlDecode($base64payload), true);
+
+        // 删除
+        RedisClient::getInstance()->del(['ci_' . $payload['exp'], 'ci_' . $payload['sub'] . '_' . $payload['iss']]);
+
+        return true;
     }
 }

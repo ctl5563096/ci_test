@@ -34,6 +34,7 @@ $routes->setAutoRoute(true);
 $routes->post('home', 'Home::index');
 $routes->post('register', 'User::register');
 $routes->post('login', 'Login::login');
+$routes->post('logout', 'Login::logout');
 
 // 用户类
 $routes->get('user', 'User::userList');
@@ -75,13 +76,16 @@ $routes->get('carousel', 'System::getCarousel');
 $routes->get('carouselInfo', 'System::getInfoCarouselById');
 $routes->put('carousel', 'System::updateCarousel');
 $routes->post('carousel', 'System::addCarousel');
-$routes->get('carouselIndex','System::getIndexCarousel');
+$routes->get('carouselIndex', 'System::getIndexCarousel');
 
 // 客户类
 $routes->post('homeCustomer', 'HomeCustomer::add');
 $routes->get('homeCustomer', 'HomeCustomer::getList');
 $routes->get('homeCustomerDetail', 'HomeCustomer::detail');
 $routes->put('homeCustomer', 'HomeCustomer::updateInfo');
+
+// websocket类
+$routes->get('bind', 'WebSocket::bind');
 /**
  * --------------------------------------------------------------------
  * Additional Routing
