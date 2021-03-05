@@ -7,6 +7,7 @@ namespace App\Controllers;
 use App\Common\RestController;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
+use GatewayClient\Gateway;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -31,6 +32,14 @@ class Websocket extends RestController
      */
     public function bind()
     {
-
+        $data = $this->request->getGet();
+        if (isset($data['client_id'])) {
+            $this->respondApi(['code' => 10009, '无法获取参数id']);
+        }
+        Gateway::$registerAddress = '120.78.13.233:1238';
+        $client_id = $data['client_id'];
+        $uid = 3;
+        Gateway::bindUid($client_id, $uid);
+//        Gateway::sendToUid($uid, '{"type":"sendMessage","to_client_id":"'. $client_id .'","content":"连接成功"}');
     }
 }
