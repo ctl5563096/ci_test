@@ -29,6 +29,7 @@ class Websocket extends RestController
      * Author: chentulin
      * DateTime: 2021/3/5 17:25
      * E-MAIL: <chentulinys@163.com>
+     * @throws \Exception
      */
     public function bind()
     {
@@ -40,6 +41,14 @@ class Websocket extends RestController
         $client_id = $data['client_id'];
         $uid = 3;
         Gateway::bindUid($client_id, $uid);
-//        Gateway::sendToUid($uid, '{"type":"sendMessage","to_client_id":"'. $client_id .'","content":"连接成功"}');
+//        var_dump(Gateway::getClientIdByUid($uid));die();
+        $message = json_encode([
+            'type'=>'onClose',
+            'content'=>'退出登录1',
+            'to_client_id'=>$client_id
+        ]);
+        Gateway::sendToUid($uid,
+            json_encode($message)
+        );
     }
 }
