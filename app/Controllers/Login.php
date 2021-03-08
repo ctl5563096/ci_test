@@ -5,18 +5,28 @@ namespace App\Controllers;
 
 
 use App\Common\Jwt;
+use App\Common\RedisClient;
 use App\Common\RestController;
 use App\Models\RuleModel;
 use App\Models\UserModel;
-use CodeIgniter\RESTful\ResourceController;
 use Config\Services;
+use GatewayClient\Gateway;
 
 class Login extends RestController
 {
     protected $modelName = 'App\Models\UserModel';
 
+    /**
+     * Notes: 登录获取token接口
+     *
+     * Author: chentulin
+     * DateTime: 2021/3/5 15:34
+     * E-MAIL: <chentulinys@163.com>
+     * @return mixed
+     */
     public function login()
     {
+        Gateway::$registerAddress = '127.0.0.1:1236';
         $param     = $this->request->getJSON();
         $model     = new UserModel();
         $arr       = $model->where(['user_name' => $param->username])->find();
@@ -25,7 +35,7 @@ class Login extends RestController
             $payload = [
                 'iss' => current($arr)['user_name'],
                 'iat' => time(),  //签发时间
-                'exp' => time() + 7200,  //过期时间
+                'exp' => md5((string)time() . current($arr)['user_name']),  //过期时间存在redis里面
                 'nbf' => time() + 0,  //生效时间，在此之前是无效的
                 'jti' => md5(uniqid('JWT') . time()),
                 'sub' => current($arr)['id'],
@@ -37,9 +47,28 @@ class Login extends RestController
             $key     = (int)current($arr)['id'] . '_' . current($arr)['user_name'];
             $cache   = Services::cache();
             $cache->save($key, $authStr, 7200);
+            RedisClient::getInstance()->setex('ci_' . $payload['exp'], 7200, 'token_expire_time');
             // 返回用户信息以方便存储到vuex里面去
             return $this->respondApi(['token' => $token, 'userInfo' => json_encode(current($arr))]);
         }
-        return  $this->respondApi(['code' => 201, 'msg' => '登录失败,请检查账号密码是否正确！']);
+        return $this->respondApi(['code' => 201, 'msg' => '登录失败,请检查账号密码是否正确！']);
+    }
+
+    /**
+     * Notes: 登出
+     *
+     * Author: chentulin
+     * DateTime: 2021/3/5 15:35
+     * E-MAIL: <chentulinys@163.com>
+     */
+    public function logout()
+    {
+        $token = $this->request->getHeader('Authorization');
+        $token = explode(' ', $token)[2];
+        $res   = Jwt::delToken($token);
+        if (!$res){
+            return $this->respondApi(['code' => 400, 'msg' => '退出登陆失败,联系管理员']);
+        }
+        return $this->respondApi([]);
     }
 }

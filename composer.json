@@ -9,7 +9,10 @@
 		"codeigniter4/framework": "^4",
       "ext-json": "*",
 		"mikehaertl/php-pdftk": "^0.8.1",
-		"predis/predis": "^1.1"
+		"predis/predis": "^1.1",
+      "ext-redis": "*",
+		"workerman/workerman": "^4.0",
+		"workerman/gatewayclient": "3.0.13"
     },
 	"require-dev": {
 		"mikey179/vfsstream": "1.6.*",

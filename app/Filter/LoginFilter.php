@@ -3,6 +3,7 @@
 namespace App\Filter;
 
 use App\Common\Jwt;
+use App\Common\RedisClient;
 use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -24,6 +25,9 @@ class LoginFilter implements FilterInterface
         $allAuth = [
             'User\getUserInfo',
             'User\updateUserInfo',
+            'System\getParameterInit',
+            'System\getIndexCarousel',
+            'Login\logout',
         ];
         // 从Service类里面提取响应实例 由于在过滤器Response还未被实例化
         $this->response = Services::response();
@@ -48,7 +52,10 @@ class LoginFilter implements FilterInterface
             $authUrl       = $controller . '\\' . $method;
             $cache         = Services::cache();
             $authStr       = $cache->get($res['res']['sub'] . '_' . $res['res']['iss']);
-            $authArr       = json_decode($authStr);
+            // 这里返回的redis单例去进行更多的操作 去刷新权限在redis中的存活时间
+            $client = RedisClient::getInstance();
+            $client->expire('ci_' . $authStr, 7200);
+            $authArr = json_decode($authStr);
             // 跳过部分接口
             if (!in_array($authUrl, $allAuth)) {
                 // 使用token去查询用户 防止token被不同用户调用
