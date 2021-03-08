@@ -4,10 +4,12 @@
 namespace App\Controllers;
 
 
+use App\Common\RedisClient;
 use App\Common\RestController;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use GatewayClient\Gateway;
+use GatewayClient\GatewayProtocol;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -34,21 +36,31 @@ class Websocket extends RestController
     public function bind()
     {
         $data = $this->request->getGet();
-        if (isset($data['client_id'])) {
+        if (isset($data['client_id']) || isset($data['user_id'])) {
             $this->respondApi(['code' => 10009, '无法获取参数id']);
         }
         Gateway::$registerAddress = '120.78.13.233:1238';
-        $client_id = $data['client_id'];
-        $uid = 3;
-        Gateway::bindUid($client_id, $uid);
-//        var_dump(Gateway::getClientIdByUid($uid));die();
-        $message = json_encode([
-            'type'=>'onClose',
-            'content'=>'退出登录1',
-            'to_client_id'=>$client_id
-        ]);
-        Gateway::sendToUid($uid,
-            json_encode($message)
-        );
+        // 利用redis保护client_id
+        if (RedisClient::getInstance()->hexists('websocket', $data['user_id'])) {
+            $client_id = RedisClient::getInstance()->hget('websocket', $data['user_id']);
+            // 删除原本的哈希键
+            RedisClient::getInstance()->hdel('websocket', $data['user_id']);
+            // 存储新的客户端id
+            RedisClient::getInstance()->hset('websocket', $data['user_id'], $data['client_id']);
+            $data = json_encode([
+                'type'         => 'onClose',
+                'content'      => '{"type":"onClose","to_client_id":"' . $client_id . '","content":"退出系统"}',
+                'to_client_id' => $client_id,
+            ], JSON_UNESCAPED_UNICODE);
+            // 去断开另外一个客户端
+            $res = Gateway::sendToClient($client_id, $data);
+            if (!$res) {
+                return $this->respondApi(['code' => '10020', 'msg' => '系统错误,请联系管理员']);
+            }
+            return $this->respondApi(['status' => '500', 'msg' => '用户已经登录,即将退出异地登录']);
+        }
+        // 存到redis里面
+        RedisClient::getInstance()->hset('websocket', $data['user_id'], $data['client_id']);
+        return $this->respondApi(['status' => '200', 'msg' => '连接成功客户端']);
     }
 }
