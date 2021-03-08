@@ -85,7 +85,7 @@ $routes->get('homeCustomerDetail', 'HomeCustomer::detail');
 $routes->put('homeCustomer', 'HomeCustomer::updateInfo');
 
 // websocket类
-$routes->get('bind', 'WebSocket::bind');
+$routes->get('bind', 'Websocket::bind');
 /**
  * --------------------------------------------------------------------
  * Additional Routing
