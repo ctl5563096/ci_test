@@ -26,10 +26,13 @@ class Login extends RestController
      */
     public function login()
     {
-        Gateway::$registerAddress = '127.0.0.1:1236';
+        // 去查询是否有验证码了,如果有就不需要重复发送
         $param     = $this->request->getJSON();
         $model     = new UserModel();
         $arr       = $model->where(['user_name' => $param->username])->find();
+        if (!RedisClient::getInstance()->hget('login_code',current($arr)['id'])){
+            return $this->respondApi(['status' => 423,'phone_num' => current($arr)['phone_num'], 'msg' => '请验证手机号码']);
+        }
         $ruleModel = new RuleModel();
         if (isset($param->password) && $param->password === current($arr)['password']) {
             $payload = [

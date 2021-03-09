@@ -16,7 +16,7 @@ class Filters extends BaseConfig
 	// Always applied before every request
 	public $globals = [
 		'before' => [
-            'login' => ['except' => ['/login', '/uploads/*']],
+            'login' => ['except' => ['/login', '/uploads/*','/sendSmsCode']],
 		],
 		'after'  => [
 			'toolbar',

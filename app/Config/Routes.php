@@ -86,6 +86,9 @@ $routes->put('homeCustomer', 'HomeCustomer::updateInfo');
 
 // websocket类
 $routes->get('bind', 'Websocket::bind');
+
+// 短信类
+$routes->post('sendSmsCode','System::sendSmsCode');
 /**
  * --------------------------------------------------------------------
  * Additional Routing

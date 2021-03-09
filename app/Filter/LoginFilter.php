@@ -27,7 +27,7 @@ class LoginFilter implements FilterInterface
             'User\updateUserInfo',
             'System\getParameterInit',
             'System\getIndexCarousel',
-            'Login\logout',
+            'Login\logout'
         ];
         // 从Service类里面提取响应实例 由于在过滤器Response还未被实例化
         $this->response = Services::response();
@@ -52,9 +52,6 @@ class LoginFilter implements FilterInterface
             $authUrl       = $controller . '\\' . $method;
             $cache         = Services::cache();
             $authStr       = $cache->get($res['res']['sub'] . '_' . $res['res']['iss']);
-            // 这里返回的redis单例去进行更多的操作 去刷新权限在redis中的存活时间
-            $client = RedisClient::getInstance();
-            $client->expire('ci_' . $authStr, 7200);
             $authArr = json_decode($authStr);
             // 跳过部分接口
             if (!in_array($authUrl, $allAuth)) {
@@ -63,6 +60,9 @@ class LoginFilter implements FilterInterface
                     return $this->response->setStatusCode(401, 'USER NOT AUTH')->send();
                 }
             }
+            // 这里返回的redis单例去进行更多的操作 去刷新权限在redis中的存活时间
+            $client = RedisClient::getInstance();
+            $client->expire('ci_' . $authStr, 7200);
 //            $cache->save('userAuthId',$res['res']['sub']);
         }
     }

@@ -4,7 +4,10 @@
 namespace App\Controllers;
 
 
+use App\Common\RedisClient;
+use App\Common\REST;
 use App\Common\RestController;
+use App\Common\SendSms;
 use App\Models\CarouselModel;
 use App\Models\ParameterModel;
 use CodeIgniter\HTTP\RequestInterface;
@@ -195,7 +198,7 @@ class System extends RestController
      */
     public function updateCarousel()
     {
-        $data = $this->request->getJSON(true);;
+        $data = $this->request->getJSON(true);
         if (!isset($data['id'])) {
             $this->respondApi(['code' => 10009, '无法获取参数id']);
         }
@@ -230,5 +233,28 @@ class System extends RestController
     {
         $list = $this->carouselModel->getEnableCarousel();
         return $this->respondApi($list);
+    }
+
+    /**
+     * Notes: 获取验证码
+     *
+     * Author: chentulin
+     * DateTime: 2021/3/9 23:15
+     * E-MAIL: <chentulinys@163.com>
+     */
+    public function sendSmsCode()
+    {
+        $params = $this->request->getJSON(true);
+        if (!isset($params['phone_num'])) {
+            $this->respondApi(['code' => 10009, '无法获取手机号码,请联系管理员']);
+        }
+        $res = (new SendSms())->sendTemplateSMS($params['phone_num'],['123456',5]);
+        if (!$res){
+            return $this->respondApi(['smsStatus' => 500, 'msg'=>'发送验证码失败']);
+        }else{
+            // 存进去redis
+            RedisClient::getInstance()->hset('login_code',$params['phone_num'],'123456');
+            return $this->respondApi(['smsStatus' => 200, 'msg'=>'发送验证码成功']);
+        }
     }
 }
