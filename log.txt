@@ -34,3 +34,6 @@ response body = {"statusCode":"160203","statusMsg":"验证码超出同模板同�
 request body = {'to':'13692477981','templateId':'1','appId':'8a216da86b8863a1016ba230f9550f79','datas':['123456','5']}
 request url = https://app.cloopen.com:8883/2013-12-26/Accounts/8a216da86b8863a1016ba230f8f60f72/SMS/TemplateSMS?sig=AC217517E43A709C4F72EE3BE5712454
 response body = {"statusCode":"160203","statusMsg":"验证码超出同模板同号码同内容一天发送上限"}
+request body = {'to':'13692477981','templateId':'1','appId':'8a216da86b8863a1016ba230f9550f79','datas':['123456','5']}
+request url = https://app.cloopen.com:8883/2013-12-26/Accounts/8a216da86b8863a1016ba230f8f60f72/SMS/TemplateSMS?sig=08F3F0481CB2E9D09BCFB85956778640
+response body = {"statusCode":"000000","templateSMS":{"smsMessageSid":"a82f43d137fa412ca3acef689c8b2e20","dateCreated":"20210310113211"}}
