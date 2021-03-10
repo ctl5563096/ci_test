@@ -249,7 +249,7 @@ class System extends RestController
             $this->respondApi(['code' => 10009, '无法获取手机号码,请联系管理员']);
         }
         // 开发环境防止多次调用短信sdk 就需要把这段代码打开
-        RedisClient::getInstance()->hset('login_code_' . $params['phone_num'] ,$params['phone_num'] ,'0');
+        RedisClient::getInstance()->hset('login_code_' . $params['phone_num'] ,$params['phone_num'] ,'123456');
         RedisClient::getInstance()->expire('login_code_' . $params['phone_num'],300);
         return $this->respondApi(['smsStatus' => 200, 'msg'=>'发送验证码成功']);
         $res = (new SendSms())->sendTemplateSMS($params['phone_num'],['123456',5]);

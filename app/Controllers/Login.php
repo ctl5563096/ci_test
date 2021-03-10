@@ -29,7 +29,7 @@ class Login extends RestController
         // 去查询是否有验证码了,如果有就不需要重复发送
         $param = $this->request->getJSON();
         $model = new UserModel();
-        $arr   = $model->where(['user_name' => $param->username])->find();
+        $arr = $model->where(['user_name' => $param->username])->find();
         $ruleModel = new RuleModel();
         if (isset($param->password) && $param->password === current($arr)['password']) {
             $payload = [
@@ -44,18 +44,19 @@ class Login extends RestController
             $token = Jwt::getToken($payload);
             // 把权限存到redis里面
             $authStr = json_encode($ruleModel->getAllAuth((int)current($arr)['id']));
-            $key     = (int)current($arr)['id'] . '_' . current($arr)['user_name'];
-            $cache   = Services::cache();
+            $key = (int)current($arr)['id'] . '_' . current($arr)['user_name'];
+            $phone_num = current($arr)['phone_num'];
+            $key_code = 'login_code_' . $phone_num;
+            // 先检查是否有验证过登录验证码
+            if (!RedisClient::getInstance()->exists($key_code) || (string)RedisClient::getInstance()->hget($key_code, $phone_num) !== $param->code) {
+                return $this->respondApi(['status' => 423, 'phone_num' => current($arr)['phone_num'], 'msg' => '请验证手机验证码错误!']);
+            }
+            $cache = Services::cache();
             $cache->save($key, $authStr, 7200);
             RedisClient::getInstance()->setex('ci_' . $payload['exp'], 7200, 'token_expire_time');
-            $phone_num = current($arr)['phone_num'];
-            $key = 'login_code_' . $phone_num;
-            if (!RedisClient::getInstance()->exists($key) && (int)RedisClient::getInstance()->hget($key,$phone_num) !== 0) {
-                return $this->respondApi(['status' => 423, 'phone_num' => current($arr)['phone_num'], 'msg' => '请验证手机号码']);
-            }
             // 返回用户信息以方便存储到vuex里面去
             return $this->respondApi(['token' => $token, 'userInfo' => json_encode(current($arr))]);
-        }else{
+        } else {
             return $this->respondApi(['code' => 201, 'msg' => '登录失败,请检查账号密码是否正确！']);
         }
 
@@ -70,9 +71,9 @@ class Login extends RestController
      */
     public function logout()
     {
-        $token  = $this->request->getHeader('Authorization');
-        $token  = explode(' ', $token)[2];
-        $res    = Jwt::delToken($token);
+        $token = $this->request->getHeader('Authorization');
+        $token = explode(' ', $token)[2];
+        $res = Jwt::delToken($token);
         $userId = Jwt::getUserIdByToken($token);
         // 这边也删除websocket连接的键
         RedisClient::getInstance()->hdel('websocket', [(string)$userId]);
