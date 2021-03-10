@@ -160,7 +160,12 @@ class Jwt
      */
     public static function getUserIdByToken(string $token): int
     {
-        $dataArr = self::verifyToken($token);
-        return (int)$dataArr['res']['sub'];
+        $tokens = explode('.', $token);
+        if (count($tokens) != 3) {
+            return 0;
+        }
+        [$base64header, $base64payload, $sign] = $tokens;
+        $payload = json_decode(self::base64UrlDecode($base64payload), true);
+        return (int)$payload['sub'];
     }
 }
