@@ -37,6 +37,15 @@ class Jwt
     }
 
 
+    /**
+     * Notes: 验证token
+     *
+     * Author: chentulin
+     * DateTime: 2021/3/10 10:26
+     * E-MAIL: <chentulinys@163.com>
+     * @param $Token
+     * @return array|bool
+     */
     public static function verifyToken($Token)
     {
         $tokens = explode('.', $Token);
@@ -138,5 +147,20 @@ class Jwt
         RedisClient::getInstance()->del(['ci_' . $payload['exp'], 'ci_' . $payload['sub'] . '_' . $payload['iss']]);
 
         return true;
+    }
+
+    /**
+     * Notes: 通过token去获取user_id
+     *
+     * Author: chentulin
+     * DateTime: 2021/3/10 10:21
+     * E-MAIL: <chentulinys@163.com>
+     * @param string $token
+     * @return int
+     */
+    public static function getUserIdByToken(string $token): int
+    {
+        $dataArr = self::verifyToken($token);
+        return (int)$dataArr['res']['sub'];
     }
 }
