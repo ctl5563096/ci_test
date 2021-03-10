@@ -30,9 +30,9 @@ class Login extends RestController
         $param = $this->request->getJSON();
         $model = new UserModel();
         $arr   = $model->where(['user_name' => $param->username])->find();
-        if (!RedisClient::getInstance()->hget('login_code', current($arr)['id'])) {
-            return $this->respondApi(['status' => 423, 'phone_num' => current($arr)['phone_num'], 'msg' => '请验证手机号码']);
-        }
+//        if (!RedisClient::getInstance()->hget('login_code', current($arr)['id'])) {
+//            return $this->respondApi(['status' => 423, 'phone_num' => current($arr)['phone_num'], 'msg' => '请验证手机号码']);
+//        }
         $ruleModel = new RuleModel();
         if (isset($param->password) && $param->password === current($arr)['password']) {
             $payload = [
