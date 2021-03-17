@@ -86,6 +86,7 @@ phpunit
 #-------------------------
 vendor/
 /app/Config/Cache.php
+/app/Config/Database.php
 /writable
 /public/uploads
 
